@@ -1,0 +1,36 @@
+---
+interface Props {
+  darkMode?: boolean;
+}
+const { darkMode = false } = Astro.props;
+---
+
+<footer class={`border-t py-8 mt-auto ${darkMode ? 'border-dark-border bg-dark-base text-slate-500' : 'border-slate-200 bg-slate-50 text-slate-500'}`}>
+  <div class="max-w-6xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm">
+    <span>© {new Date().getFullYear()} Bojan Milinic</span>
+    <div class="flex items-center gap-6">
+      <a
+        href="https://github.com/ssgokuclaw"
+        target="_blank"
+        rel="noopener noreferrer"
+        class={`transition-colors ${darkMode ? 'hover:text-slate-300' : 'hover:text-slate-700'}`}
+      >
+        GitHub
+      </a>
+      <a
+        href="https://orcid.org/0000-0001-5516-2291"
+        target="_blank"
+        rel="noopener noreferrer"
+        class={`transition-colors ${darkMode ? 'hover:text-slate-300' : 'hover:text-slate-700'}`}
+      >
+        ORCID
+      </a>
+      <a
+        href="mailto:bmilinic@usgs.gov"
+        class={`transition-colors ${darkMode ? 'hover:text-slate-300' : 'hover:text-slate-700'}`}
+      >
+        Email
+      </a>
+    </div>
+  </div>
+</footer>
