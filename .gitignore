@@ -1,0 +1,59 @@
+# ── Build output (auto-generated, never commit) ──────────────────────
+dist/
+.astro/
+
+# ── Dependencies (auto-generated, never commit) ───────────────────────
+node_modules/
+
+# ── Environment variables & secrets (NEVER commit) ───────────────────
+.env
+.env.local
+.env.development
+.env.production
+.env.staging
+.env*.local
+
+# ── Private keys & credentials (NEVER commit) ─────────────────────────
+*.pem
+*.key
+*.p12
+*.pfx
+id_rsa
+id_ed25519
+*.secret
+
+# ── Stripe / payment config (if you ever add server-side keys) ────────
+# Public Payment Link URLs in classes.js are fine — they're public
+# But never commit secret keys like sk_live_* or sk_test_*
+stripe-config.js
+secrets.js
+
+# ── OS clutter ────────────────────────────────────────────────────────
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# ── Editor clutter ────────────────────────────────────────────────────
+.vscode/settings.json
+.vscode/launch.json
+.idea/
+*.swp
+*.swo
+*~
+
+# ── Logs ──────────────────────────────────────────────────────────────
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ── Misc ──────────────────────────────────────────────────────────────
+.cache/
+.parcel-cache/
+.netlify/
+*.zip

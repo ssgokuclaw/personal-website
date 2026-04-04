@@ -1,0 +1,74 @@
+---
+const pathname = Astro.url.pathname;
+
+const links = [
+  { href: '/cv', label: 'CV' },
+  { href: '/projects', label: 'Projects' },
+  { href: '/teaching', label: 'Teaching' },
+  { href: '/contact', label: 'Contact' },
+];
+
+function isActive(href: string) {
+  return pathname === href || pathname === href + '/';
+}
+---
+
+<header class="bg-navy-dark sticky top-0 z-50 shadow-md">
+  <div class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+    <!-- Logo / Name -->
+    <a
+      href="/"
+      class="text-white font-semibold text-lg tracking-wide hover:text-accent-light transition-colors"
+    >
+      Bojan Milinic
+    </a>
+
+    <!-- Desktop nav -->
+    <nav class="hidden md:flex items-center gap-1">
+      {
+        links.map(({ href, label }) => (
+          <a
+            href={href}
+            class={`px-4 py-2 rounded text-sm font-medium transition-colors ${
+              isActive(href)
+                ? 'text-white bg-navy-light'
+                : 'text-slate-300 hover:text-white hover:bg-white/10'
+            }`}
+          >
+            {label}
+          </a>
+        ))
+      }
+    </nav>
+
+    <!-- Mobile nav toggle (CSS-only via details/summary) -->
+    <details class="md:hidden group">
+      <summary class="list-none cursor-pointer text-slate-300 hover:text-white p-2 rounded transition-colors">
+        <!-- Hamburger icon -->
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 group-open:hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+        <!-- Close icon -->
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 hidden group-open:block" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </summary>
+      <div class="absolute top-16 left-0 right-0 bg-navy-dark border-t border-navy-light shadow-lg py-2">
+        {
+          links.map(({ href, label }) => (
+            <a
+              href={href}
+              class={`block px-6 py-3 text-sm font-medium transition-colors ${
+                isActive(href)
+                  ? 'text-white bg-navy-light'
+                  : 'text-slate-300 hover:text-white hover:bg-white/10'
+              }`}
+            >
+              {label}
+            </a>
+          ))
+        }
+      </div>
+    </details>
+  </div>
+</header>
