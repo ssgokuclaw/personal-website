@@ -29,7 +29,7 @@ export const classes = [
       'Your first Python script walkthrough',
       'Roadmap for where to go next',
     ],
-    stripeLink: 'YOUR_STRIPE_PAYMENT_LINK_INTRO',
+    stripeLink: 'https://book.stripe.com/5kQbJ29Sn2SA8x3frJd3i00',
     venmoNote: 'Intro to Coding - 1 session',
   },
   {
