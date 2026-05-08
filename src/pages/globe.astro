@@ -1,0 +1,212 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { taughtCountries } from '../data/taughtCountries.js';
+
+const count = taughtCountries.length;
+---
+
+<BaseLayout
+  title="Students Around the World"
+  description="Countries Bojan Milinic has had the privilege of teaching students from"
+  darkMode={true}
+>
+  <main class="max-w-6xl mx-auto px-6 py-16">
+
+    <!-- Hero -->
+    <section class="mb-10">
+      <p class="font-mono text-accent-light text-sm mb-3 tracking-wide">// globe</p>
+      <div class="flex items-start justify-between flex-wrap gap-4">
+        <div>
+          <h1 class="font-serif text-4xl md:text-5xl font-bold text-white mb-4 leading-tight">
+            Students Around the World
+          </h1>
+          <p class="text-slate-400 text-lg max-w-2xl leading-relaxed">
+            Countries I've had the privilege of teaching
+          </p>
+        </div>
+        <span class="font-mono text-sm bg-dark-card border border-dark-border text-accent-light px-4 py-2 rounded-full self-start mt-1">
+          {count} {count === 1 ? 'country' : 'countries'}
+        </span>
+      </div>
+    </section>
+
+    <!-- Globe -->
+    <section class="flex justify-center mb-14">
+      <div id="globe-wrap" class="relative w-full" style="max-width: 680px;">
+        <svg id="globe" style="cursor: grab; display: block; width: 100%;"></svg>
+        <div
+          id="tooltip"
+          class="absolute hidden pointer-events-none bg-dark-card border border-dark-border text-white text-sm px-3 py-1.5 rounded shadow-lg font-mono z-10 whitespace-nowrap"
+          style="top: 0; left: 0;"
+        ></div>
+      </div>
+    </section>
+
+    <!-- Country list (accessible fallback + visible list) -->
+    <section>
+      <h2 class="text-xs font-mono uppercase tracking-widest text-slate-500 mb-6">
+        ── Taught Countries
+      </h2>
+      <div id="country-list" class="flex flex-wrap gap-2">
+        {count === 0 && (
+          <p class="text-slate-500 font-mono text-sm">
+            No countries added yet — edit <code class="text-accent-light">src/data/taughtCountries.js</code> to get started.
+          </p>
+        )}
+      </div>
+    </section>
+
+  </main>
+</BaseLayout>
+
+<script is:inline define:vars={{ taughtCountries }}>
+(async () => {
+  // Load D3 from CDN
+  await new Promise((resolve, reject) => {
+    const s = document.createElement('script');
+    s.src = 'https://cdn.jsdelivr.net/npm/d3@7';
+    s.onload = resolve;
+    s.onerror = reject;
+    document.head.appendChild(s);
+  });
+
+  const wrap = document.getElementById('globe-wrap');
+  const svgEl = document.getElementById('globe');
+
+  const size = Math.min(wrap.clientWidth, 680);
+  svgEl.setAttribute('width', size);
+  svgEl.setAttribute('height', size);
+
+  const svg = d3.select(svgEl);
+  const cx = size / 2;
+  const cy = size / 2;
+  const radius = size * 0.44;
+
+  const projection = d3.geoOrthographic()
+    .scale(radius)
+    .translate([cx, cy])
+    .rotate([0, -25])
+    .clipAngle(90);
+
+  const path = d3.geoPath().projection(projection);
+  const graticule = d3.geoGraticule();
+
+  // Site-matched color palette
+  const OCEAN       = '#0c1d35';
+  const LAND        = '#1e3a5f';
+  const HIGHLIGHTED = '#60a5fa';
+  const HOVER_HI    = '#93c5fd';
+  const HOVER_LAND  = '#2a4f7c';
+  const GRID_COLOR  = '#1e3a5f';
+  const BORDER      = '#0a1629';
+
+  // Ocean sphere
+  svg.append('circle')
+    .attr('cx', cx).attr('cy', cy).attr('r', radius)
+    .attr('fill', OCEAN)
+    .attr('stroke', '#1e3a5f').attr('stroke-width', 1);
+
+  // Graticule
+  const graticulePath = svg.append('path')
+    .datum(graticule())
+    .attr('d', path)
+    .attr('fill', 'none')
+    .attr('stroke', GRID_COLOR)
+    .attr('stroke-width', 0.3)
+    .attr('opacity', 0.6);
+
+  // Fetch GeoJSON (ISO_A3 in properties — no lookup table needed)
+  const world = await d3.json(
+    'https://raw.githubusercontent.com/datasets/geo-countries/master/data/countries.geojson'
+  );
+
+  const highlighted = new Set(taughtCountries);
+
+  // Country paths
+  const countries = svg.selectAll('.country')
+    .data(world.features)
+    .enter().append('path')
+    .attr('class', 'country')
+    .attr('d', path)
+    .attr('fill', d => highlighted.has(d.properties.ISO_A3) ? HIGHLIGHTED : LAND)
+    .attr('stroke', BORDER)
+    .attr('stroke-width', 0.4);
+
+  // Build accessible country list
+  const taughtNames = world.features
+    .filter(f => highlighted.has(f.properties.ISO_A3))
+    .map(f => f.properties.ADMIN || f.properties.ISO_A3)
+    .sort();
+
+  const listEl = document.getElementById('country-list');
+  if (listEl && taughtNames.length > 0) {
+    listEl.innerHTML = taughtNames.map(name =>
+      `<span style="display:inline-flex;align-items:center;gap:6px;font-size:0.875rem;font-family:monospace;color:#cbd5e1;background:#1e293b;border:1px solid #334155;padding:6px 14px;border-radius:4px;">
+        <span style="width:8px;height:8px;border-radius:50%;background:#60a5fa;flex-shrink:0;"></span>
+        ${name}
+      </span>`
+    ).join('');
+  }
+
+  // Tooltip
+  const tooltip = document.getElementById('tooltip');
+
+  countries
+    .on('mousemove', function(event, d) {
+      const isH = highlighted.has(d.properties.ISO_A3);
+      d3.select(this).attr('fill', isH ? HOVER_HI : HOVER_LAND);
+      tooltip.textContent = (d.properties.ADMIN || d.properties.ISO_A3) + (isH ? ' ★' : '');
+      tooltip.classList.remove('hidden');
+      const cRect = wrap.getBoundingClientRect();
+      tooltip.style.left = (event.clientX - cRect.left + 14) + 'px';
+      tooltip.style.top  = (event.clientY - cRect.top  - 40) + 'px';
+    })
+    .on('mouseleave', function(_, d) {
+      const isH = highlighted.has(d.properties.ISO_A3);
+      d3.select(this).attr('fill', isH ? HIGHLIGHTED : LAND);
+      tooltip.classList.add('hidden');
+    });
+
+  function redraw() {
+    graticulePath.attr('d', path);
+    countries.attr('d', path);
+  }
+
+  // Drag to rotate
+  let dragging = false;
+
+  svg.call(
+    d3.drag()
+      .on('start', () => {
+        dragging = true;
+        svgEl.style.cursor = 'grabbing';
+      })
+      .on('drag', (event) => {
+        const [λ, φ] = projection.rotate();
+        projection.rotate([λ + event.dx * 0.4, φ - event.dy * 0.4]);
+        redraw();
+      })
+      .on('end', () => {
+        dragging = false;
+        svgEl.style.cursor = 'grab';
+      })
+  );
+
+  // Auto-rotate
+  let raf;
+  function autoRotate() {
+    if (!dragging) {
+      const [λ, φ] = projection.rotate();
+      projection.rotate([λ + 0.12, φ]);
+      redraw();
+    }
+    raf = requestAnimationFrame(autoRotate);
+  }
+  autoRotate();
+
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) cancelAnimationFrame(raf);
+    else autoRotate();
+  });
+})();
+</script>

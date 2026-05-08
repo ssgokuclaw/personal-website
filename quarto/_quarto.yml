@@ -1,0 +1,12 @@
+project:
+  type: default
+  output-dir: ../public/notebooks
+  render:
+    - "*.qmd"
+
+format:
+  html:
+    embed-resources: true
+    toc: true
+    code-fold: true
+    theme: cosmo
