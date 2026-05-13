@@ -27,6 +27,15 @@ export const projects = [
     featured: true,
   },
   {
+    title: 'Water Geogenic Contamination Data Summarization and Plotting Pipeline',
+    description:
+      'End-to-end data organization and processing pipeline for water availability data related to geogenic contaminants and societal factors. Transformed raw data from a variety of hydrological sources and records into standard national percentile ranking values for each study basin. These ranking where than combined to form a national ranking for each watershed. The figures created from this pipeline were used in "Prioritizing water availability study settings to address geogenic contaminants and related societal factors" by Melinda Erickson et al in the Environmental Monitoring and Accessment journal. (https://doi.org/10.1007/s10661-024-12362-2). Includes figures 3, 4, 5, and 6.',
+    tags: ['Python', 'Pandas', 'Data Engineering', 'Watershed'],
+    github: null,
+    demo: null,
+    featured: false,
+  },
+  {
     title: 'Watershed Data Pipeline',
     description:
       'End-to-end data organization and preprocessing pipeline for watershed modeling teams. Automates ingestion of multi-source hydrological records into structured formats compatible with standard modeling frameworks.',

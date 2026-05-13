@@ -1,0 +1,119 @@
+---
+title: "Streamflow Analysis: Upper Colorado Basin"
+author: "Bojan Milinic"
+date: today
+---
+
+## Introduction
+
+This notebook demonstrates basic streamflow analysis using hypothetical gauge data
+modeled after USGS monitoring sites in the Upper Colorado River basin.
+The synthetic record simulates a water year (Oct 2023 – Sep 2024) for a
+snowmelt-driven system — characterised by low winter baseflow and a sharp
+spring peak as mountain snowpack melts.
+
+## Setup
+
+```{python}
+import pandas as pd
+import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
+import numpy as np
+
+np.random.seed(42)
+plt.rcParams["figure.dpi"] = 120
+```
+
+## Synthetic Streamflow Record
+
+Daily mean discharge is constructed from three components: a Gaussian snowmelt
+pulse peaking in late May, a low-amplitude seasonal baseflow cycle, and random
+measurement noise.
+
+```{python}
+dates = pd.date_range("2023-10-01", "2024-09-30", freq="D")
+n = len(dates)
+
+day_of_year = np.array([d.timetuple().tm_yday for d in dates])
+
+# Snowmelt pulse centered on day 145 (~late May)
+snowmelt  = 800 * np.exp(-((day_of_year - 145) ** 2) / (2 * 28 ** 2))
+baseflow  = 120 + 30 * np.sin(2 * np.pi * day_of_year / 365)
+noise     = np.random.normal(0, 18, n)
+
+discharge = np.clip(snowmelt + baseflow + noise, 45, None).round(1)
+
+df = pd.DataFrame({"date": dates, "discharge_cfs": discharge})
+print(f"Water year: {df['date'].min().date()} → {df['date'].max().date()}")
+print(f"Peak discharge: {df['discharge_cfs'].max():.0f} cfs on "
+      f"{df.loc[df['discharge_cfs'].idxmax(), 'date'].date()}")
+print(f"Min  discharge: {df['discharge_cfs'].min():.0f} cfs")
+```
+
+## Hydrograph
+
+```{python}
+fig, ax = plt.subplots(figsize=(10, 4))
+
+ax.fill_between(df["date"], df["discharge_cfs"],
+                alpha=0.25, color="#3b82f6")
+ax.plot(df["date"], df["discharge_cfs"],
+        color="#3b82f6", linewidth=1.4, label="Daily mean discharge")
+
+ax.axhline(df["discharge_cfs"].mean(), color="#f59e0b",
+           linewidth=1, linestyle="--", label=f"Annual mean ({df['discharge_cfs'].mean():.0f} cfs)")
+
+ax.set_ylabel("Discharge (cfs)")
+ax.set_title("Daily Mean Streamflow — Upper Colorado Basin (WY 2024)")
+ax.xaxis.set_major_formatter(mdates.DateFormatter("%b '%y"))
+ax.xaxis.set_major_locator(mdates.MonthLocator())
+plt.xticks(rotation=30, ha="right")
+ax.grid(True, alpha=0.25)
+ax.legend(fontsize=9)
+fig.tight_layout()
+plt.show()
+```
+
+## Monthly Summary Statistics
+
+```{python}
+month_order = [
+    "October", "November", "December", "January", "February",
+    "March", "April", "May", "June", "July", "August", "September",
+]
+
+summary = (
+    df.assign(month=df["date"].dt.month_name())
+    .groupby("month")["discharge_cfs"]
+    .agg(
+        Mean="mean",
+        Median="median",
+        Min="min",
+        Max="max",
+    )
+    .round(1)
+    .reindex(month_order)
+)
+
+summary
+```
+
+## Flow Duration Curve
+
+A flow duration curve shows what fraction of the time streamflow equals or
+exceeds a given discharge — a standard tool for characterising a basin's
+hydrologic regime.
+
+```{python}
+sorted_q = np.sort(df["discharge_cfs"])[::-1]
+exceedance = np.linspace(0, 100, len(sorted_q))
+
+fig, ax = plt.subplots(figsize=(8, 4))
+ax.semilogy(exceedance, sorted_q, color="#3b82f6", linewidth=1.5)
+ax.set_xlabel("Exceedance probability (%)")
+ax.set_ylabel("Discharge (cfs) — log scale")
+ax.set_title("Flow Duration Curve — WY 2024")
+ax.grid(True, which="both", alpha=0.2)
+fig.tight_layout()
+plt.show()
+```

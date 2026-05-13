@@ -1,0 +1,86 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const notebooks = [
+  {
+    slug: 'hello',
+    title: 'Streamflow Analysis: Upper Colorado Basin',
+    description:
+      'Synthetic hydrograph, monthly summary statistics, and flow duration curve for a snowmelt-driven basin — generated with Python, pandas, and matplotlib.',
+    tags: ['hydrology', 'python', 'matplotlib'],
+    date: '2026-05-05',
+  },
+];
+---
+
+<BaseLayout
+  title="Notebooks"
+  description="Quarto notebooks on hydrology, geoscience, and scientific Python by Bojan Milinic"
+  darkMode={true}
+>
+  <main class="max-w-6xl mx-auto px-6 py-16">
+
+    <!-- Hero -->
+    <section class="mb-14">
+      <p class="font-mono text-accent-light text-sm mb-3 tracking-wide">// notebooks</p>
+      <h1 class="font-serif text-4xl md:text-5xl font-bold text-white mb-4 leading-tight">
+        Scientific Notebooks
+      </h1>
+      <p class="text-slate-400 text-lg max-w-2xl leading-relaxed">
+        Reproducible analyses and worked examples in Python — rendered from
+        <a href="https://quarto.org" class="text-accent-light hover:underline" target="_blank" rel="noopener">Quarto</a>
+        source files.
+      </p>
+      <div class="mt-6 font-mono text-sm text-slate-500">
+        <span class="text-accent-light">{notebooks.length}</span> {notebooks.length === 1 ? 'notebook' : 'notebooks'}
+      </div>
+    </section>
+
+    <!-- Notebook cards -->
+    <section>
+      <h2 class="text-xs font-mono uppercase tracking-widest text-slate-500 mb-6">
+        ── Published
+      </h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+        {notebooks.map((nb) => (
+          <a
+            href={`/notebooks/${nb.slug}.html`}
+            class="group block bg-dark-card border border-dark-border rounded-lg p-6 hover:border-accent transition-colors"
+          >
+            <div class="flex items-start justify-between gap-3 mb-3">
+              <h3 class="font-serif text-lg font-semibold text-white group-hover:text-accent-light transition-colors leading-snug">
+                {nb.title}
+              </h3>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-4 w-4 text-slate-500 group-hover:text-accent-light transition-colors flex-shrink-0 mt-1"
+                fill="none" viewBox="0 0 24 24" stroke="currentColor"
+              >
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+              </svg>
+            </div>
+            <p class="text-slate-400 text-sm leading-relaxed mb-4">{nb.description}</p>
+            <div class="flex flex-wrap gap-2">
+              {nb.tags.map((tag) => (
+                <span class="font-mono text-xs text-accent-light bg-accent/10 px-2 py-0.5 rounded">
+                  {tag}
+                </span>
+              ))}
+            </div>
+            <p class="mt-4 font-mono text-xs text-slate-600">{nb.date}</p>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <!-- Usage note -->
+    <section class="mt-14 border-t border-dark-border pt-10">
+      <p class="font-mono text-sm text-slate-500">
+        Source files live in <code class="text-accent-light">quarto/</code>.
+        Run <code class="text-accent-light">npm run render:quarto</code> to rebuild all notebooks.
+      </p>
+    </section>
+
+  </main>
+</BaseLayout>
