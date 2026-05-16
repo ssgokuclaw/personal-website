@@ -58,3 +58,6 @@ docs
 .parcel-cache/
 .netlify/
 *.zip
+
+# ── Claude Code ───────────────────────────────────────────────────────
+.claude/
