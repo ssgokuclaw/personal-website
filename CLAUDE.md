@@ -2,6 +2,10 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Development Rules
+
+**Always verify before handing off:** After any code change, run `npm run build` and confirm it succeeds before telling the user to try it. If there are errors, fix them first.
+
 ## Commands
 
 ```bash
@@ -30,6 +34,22 @@ All site content is static and data-driven. The pattern is:
 - **`src/layouts/BaseLayout.astro`** — single layout wrapping all pages; accepts `title`, `description`, and `darkMode` props; dark mode (`bg-dark-base`) is used on all current pages
 
 **To add or edit content**, edit the relevant file in `src/data/` — no page or component changes needed.
+
+**Nav variants:** Two nav variants are set via `navVariant` prop on `BaseLayout`. `'professional'` (default): brand→`/`, links: CV · Projects · Contact. `'teaching'`: brand→`/teaching`, links: Teaching · Globe · Notebooks. The two sides intentionally have no cross-links.
+
+## Pages
+
+| Route | Purpose |
+|---|---|
+| `/` | Home / CV (professional nav) |
+| `/projects` | Projects list (professional nav) |
+| `/contact` | Contact (professional nav) |
+| `/teaching` | Teaching overview (teaching nav) |
+| `/globe` | Interactive globe (teaching nav) |
+| `/notebooks` | Quarto notebooks (teaching nav) |
+| `/booking-confirmed` | Post-Stripe payment page; shows Calendly inline embed for scheduling; replace `YOUR_CALENDLY_LINK` placeholder with real link |
+| `/dance` | Branches of Dance landing page; QR code on flyers points here; has Python/dance joke; CTAs to `/dance-booking` and `/teaching` |
+| `/dance-booking` | Free intro class booking; bypasses Stripe; goes straight to Calendly; replace `YOUR_CALENDLY_LINK/free-intro` placeholder with real link |
 
 ## Tailwind custom tokens
 
