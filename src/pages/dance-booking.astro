@@ -1,0 +1,85 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="Book Your Free Intro Session"
+  description="Pick a time for your free introductory Python session with Bojan Milinic."
+>
+  <main>
+
+    <!-- Header -->
+    <section class="bg-navy py-16 px-6 text-white">
+      <div class="max-w-2xl mx-auto text-center">
+        <p class="font-mono text-accent-light text-sm tracking-widest mb-4 uppercase">
+          Free · First Session · No Commitment
+        </p>
+        <h1 class="font-serif text-4xl md:text-5xl font-bold mb-5 leading-tight">
+          You're in — pick your time
+        </h1>
+        <p class="text-slate-300 text-lg leading-relaxed max-w-xl mx-auto">
+          Choose a slot below and we'll meet live for a free 30-minute intro session.
+          No preparation needed — just show up curious.
+        </p>
+      </div>
+    </section>
+
+    <!-- Calendly embed -->
+    <section class="bg-slate-50 py-14 px-6 border-t border-slate-200">
+      <div class="max-w-3xl mx-auto">
+        <!-- REPLACE: create a separate Calendly event type for free intro sessions, paste its link here -->
+        <div
+          class="calendly-inline-widget rounded-lg overflow-hidden shadow"
+          data-url="https://calendly.com/YOUR_CALENDLY_LINK/free-intro"
+          style="min-width:320px;height:700px;"
+        ></div>
+        <script is:inline src="https://assets.calendly.com/assets/external/widget.js" async></script>
+      </div>
+    </section>
+
+    <!-- What to expect -->
+    <section class="bg-white py-14 px-6 border-t border-slate-200">
+      <div class="max-w-2xl mx-auto">
+        <h2 class="font-serif text-2xl font-bold text-navy mb-6">What to expect</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+          {[
+            {
+              step: '01',
+              title: 'We meet live',
+              desc: 'A 30-minute video call — no slides, no lectures. We talk about what you want to learn.',
+            },
+            {
+              step: '02',
+              title: 'We write real code',
+              desc: "From the first minute, you'll have a code editor open. Even if you've never coded before.",
+            },
+            {
+              step: '03',
+              title: 'You decide what's next',
+              desc: 'After the session, you choose whether to book a paid session. Zero pressure either way.',
+            },
+          ].map(({ step, title, desc }) => (
+            <div class="flex gap-4">
+              <span class="font-mono text-2xl font-bold text-accent/30 shrink-0 leading-none mt-0.5">{step}</span>
+              <div>
+                <h3 class="font-semibold text-navy mb-1">{title}</h3>
+                <p class="text-slate-500 text-sm leading-relaxed">{desc}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- Secondary link -->
+    <section class="bg-slate-50 py-10 px-6 border-t border-slate-200">
+      <div class="max-w-2xl mx-auto text-center">
+        <p class="text-slate-500 text-sm">
+          Want to browse all sessions and pricing first?
+          <a href="/teaching" class="text-accent hover:underline font-medium ml-1">See all sessions →</a>
+        </p>
+      </div>
+    </section>
+
+  </main>
+</BaseLayout>
