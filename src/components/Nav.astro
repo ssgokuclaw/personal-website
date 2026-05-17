@@ -1,14 +1,25 @@
 ---
+interface Props {
+  variant?: 'professional' | 'teaching';
+}
+
+const { variant = 'professional' } = Astro.props;
 const pathname = Astro.url.pathname;
 
-const links = [
+const professionalLinks = [
   { href: '/cv', label: 'CV' },
   { href: '/projects', label: 'Projects' },
+  { href: '/contact', label: 'Contact' },
+];
+
+const teachingLinks = [
   { href: '/teaching', label: 'Teaching' },
   { href: '/globe', label: 'Globe' },
   { href: '/notebooks', label: 'Notebooks' },
-  { href: '/contact', label: 'Contact' },
 ];
+
+const links = variant === 'teaching' ? teachingLinks : professionalLinks;
+const brandHref = variant === 'teaching' ? '/teaching' : '/';
 
 function isActive(href: string) {
   return pathname === href || pathname === href + '/';
@@ -19,7 +30,7 @@ function isActive(href: string) {
   <div class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
     <!-- Logo / Name -->
     <a
-      href="/"
+      href={brandHref}
       class="text-white font-semibold text-lg tracking-wide hover:text-accent-light transition-colors"
     >
       Bojan Milinic
