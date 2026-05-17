@@ -6,12 +6,14 @@ interface Props {
   title: string;
   description?: string;
   darkMode?: boolean;
+  navVariant?: 'professional' | 'teaching';
 }
 
 const {
   title,
   description = 'Bojan Milinic — Physical Scientist & Python Educator',
   darkMode = false,
+  navVariant = 'professional',
 } = Astro.props;
 ---
 
@@ -31,7 +33,7 @@ const {
     />
   </head>
   <body class={darkMode ? 'bg-dark-base text-slate-300 font-sans' : 'bg-white text-slate-800 font-sans'}>
-    <Nav />
+    <Nav variant={navVariant} />
     <slot />
     <Footer darkMode={darkMode} />
   </body>
