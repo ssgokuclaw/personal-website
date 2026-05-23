@@ -1,5 +1,10 @@
 ---
-const pathname = Astro.url.pathname;
+interface Props {
+  activeHref?: string;
+}
+
+const { activeHref } = Astro.props;
+const pathname = activeHref ?? Astro.url.pathname;
 
 const links = [
   { href: '/cv', label: 'CV' },
