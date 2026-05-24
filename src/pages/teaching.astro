@@ -8,6 +8,7 @@ import { cv } from '../data/cv.js';
 <BaseLayout
   title="Teaching"
   description="1-on-1 Python and coding tutoring sessions with Bojan Milinic"
+  navVariant="teaching"
 >
   <main>
 
@@ -95,6 +96,7 @@ import { cv } from '../data/cv.js';
       <h2 class="font-serif text-3xl font-bold text-navy mb-2">Available Sessions</h2>
       <p class="text-slate-500 mb-10">All sessions are conducted live over video call. Prices are per session.</p>
 
+      <!-- REPLACE: add ?redirect_url=https://yoursite.netlify.app/booking-confirmed to your Stripe payment link -->
       <div class="space-y-6">
         {classes.map((cls) => (
           <ClassCard

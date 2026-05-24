@@ -1,0 +1,88 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="Welcome, Branches of Dance"
+  description="A special welcome for Branches of Dance attendees — Python tutoring for scientists and curious beginners."
+>
+  <main>
+
+    <!-- Hero -->
+    <section class="bg-navy py-20 px-6 text-white">
+      <div class="max-w-2xl mx-auto text-center">
+        <p class="font-mono text-accent-light text-sm tracking-widest mb-4 uppercase">
+          Welcome · Branches of Dance
+        </p>
+        <h1 class="font-serif text-4xl md:text-5xl font-bold mb-6 leading-tight">
+          Hello from the other side<br class="hidden sm:block" /> of the stage
+        </h1>
+        <p class="text-slate-300 text-lg leading-relaxed">
+          If you found this page, you scanned the QR code — which means you're curious, and
+          curious people make great programmers. Welcome.
+        </p>
+      </div>
+    </section>
+
+    <!-- Joke -->
+    <section class="bg-navy-dark py-14 px-6 border-t border-navy-light">
+      <div class="max-w-xl mx-auto text-center">
+        <span class="text-2xl mb-6 block" aria-hidden="true">⌨️</span>
+        <blockquote class="font-serif text-xl md:text-2xl italic text-slate-200 leading-relaxed">
+          "The hardest part of Python? Knowing when to <code class="font-mono text-accent-light not-italic text-lg">break</code> out of a loop.<br class="hidden sm:block" />
+          Same goes for improv."
+        </blockquote>
+      </div>
+    </section>
+
+    <!-- Pitch -->
+    <section class="bg-slate-50 py-16 px-6 border-t border-slate-200">
+      <div class="max-w-2xl mx-auto">
+        <h2 class="font-serif text-3xl font-bold text-navy mb-6">
+          Learning Python is a lot like learning choreography
+        </h2>
+        <div class="space-y-4 text-slate-600 leading-relaxed text-base">
+          <p>
+            Both take patience. Both require repetition before things feel natural. And in both,
+            the moment it <em>clicks</em> — when your body (or your code) just does what you
+            intended — is genuinely satisfying.
+          </p>
+          <p>
+            I'm Bojan. I teach Python to scientists, researchers, and curious beginners in
+            live 1-on-1 sessions. No pre-recorded videos, no one-size-fits-all curriculum —
+            just you, me, and real code from the first minute.
+          </p>
+          <p>
+            I write Python every day as a Physical Scientist at the U.S. Geological Survey,
+            and I've been teaching long enough to know that the right pace matters more than
+            anything else. We go as fast or slow as you need.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="bg-white py-16 px-6 border-t border-slate-200">
+      <div class="max-w-2xl mx-auto text-center">
+        <h2 class="font-serif text-2xl font-bold text-navy mb-3">
+          Start with a free session — no commitment
+        </h2>
+        <p class="text-slate-500 mb-8 text-base">
+          First-time students get a free 30-minute intro session. Pick a time, write some code,
+          and see if it clicks. No preparation needed.
+        </p>
+        <a
+          href="/dance-booking"
+          class="inline-block bg-navy hover:bg-navy-light text-white font-semibold px-8 py-3 rounded transition-colors text-sm tracking-wide"
+        >
+          Book Your Free Intro Session →
+        </a>
+        <p class="mt-5 text-sm text-slate-400">
+          Returning student or want to browse first?
+          <a href="/teaching" class="text-accent hover:underline ml-1">See all sessions →</a>
+        </p>
+      </div>
+    </section>
+
+  </main>
+</BaseLayout>
