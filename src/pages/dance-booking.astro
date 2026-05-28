@@ -24,16 +24,18 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       </div>
     </section>
 
-    <!-- Calendly embed -->
+    <!-- Book form link -->
     <section class="bg-slate-50 py-14 px-6 border-t border-slate-200">
-      <div class="max-w-3xl mx-auto">
-        <!-- REPLACE: create a separate Calendly event type for free intro sessions, paste its link here -->
-        <div
-          class="calendly-inline-widget rounded-lg overflow-hidden shadow"
-          data-url="https://calendly.com/bojan-milinic/learn-to-code-free"
-          style="min-width:320px;height:700px;"
-        ></div>
-        <script is:inline src="https://assets.calendly.com/assets/external/widget.js" async></script>
+      <div class="max-w-xl mx-auto text-center">
+        <p class="text-slate-600 mb-8 leading-relaxed">
+          Fill out the short form below and Bojan will reach out within 24 hours to confirm your free intro session time.
+        </p>
+        <a
+          href="/book"
+          class="inline-block bg-navy hover:bg-navy-light text-white font-semibold px-8 py-3 rounded-lg transition-colors text-sm tracking-wide"
+        >
+          Request Your Free Intro Session →
+        </a>
       </div>
     </section>
 

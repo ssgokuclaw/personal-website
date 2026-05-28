@@ -17,8 +17,8 @@ export const classes = [
     title: 'Intro to Coding Concepts',
     subtitle: 'Think like a programmer — no experience required',
     level: 'Beginner',
-    price: 40,
-    duration: '45 min',
+    price: 20,
+    duration: '55 min',
     format: '1-on-1 · Live Online',
     description:
       'Not sure if coding is for you? This session covers the core ideas behind programming — how computers think, how problems get broken down, and what writing code actually looks like. No prior experience needed.',
@@ -37,8 +37,8 @@ export const classes = [
     title: 'Python Fundamentals',
     subtitle: 'Build a solid foundation in Python',
     level: 'Beginner',
-    price: 50,
-    duration: '60 min',
+    price: 20,
+    duration: '55 min',
     format: '1-on-1 · Live Online',
     description:
       'A hands-on introduction to Python for those who are new to programming or switching from another language. We work through real exercises at your pace, building practical skills from the ground up.',
@@ -57,8 +57,8 @@ export const classes = [
     title: 'Python for Data Analysis',
     subtitle: 'Work with real data using pandas & matplotlib',
     level: 'Intermediate',
-    price: 60,
-    duration: '60 min',
+    price: 20,
+    duration: '55 min',
     format: '1-on-1 · Live Online',
     description:
       'Learn to load, clean, analyze, and visualize data using Python\'s most powerful scientific libraries. We work through real datasets so you leave each session with skills you can apply immediately.',
@@ -77,8 +77,8 @@ export const classes = [
     title: 'Python for Scientists & Researchers',
     subtitle: 'Applied Python tailored to your field',
     level: 'Intermediate',
-    price: 70,
-    duration: '75 min',
+    price: 20,
+    duration: '55 min',
     format: '1-on-1 · Live Online',
     description:
       'Designed for scientists, engineers, and researchers who want to use Python in their specific domain. Sessions are customized to your work — from processing field data to automating repetitive tasks in earth science, environmental analysis, or other STEM fields.',

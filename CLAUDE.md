@@ -47,9 +47,10 @@ All site content is static and data-driven. The pattern is:
 | `/teaching` | Teaching overview (teaching nav) |
 | `/globe` | Interactive globe (teaching nav) |
 | `/notebooks` | Quarto notebooks (teaching nav) |
-| `/booking-confirmed` | Post-Stripe payment page; shows Calendly inline embed for scheduling; replace `YOUR_CALENDLY_LINK` placeholder with real link |
+| `/book` | Central booking form (Formspree); collects name, email, session interest, format, who-for, background/age, message; redirects to `/booking-confirmed` on submit |
+| `/booking-confirmed` | Thank-you page shown after form submission; has Browse Sessions + Email Bojan CTAs |
 | `/dance` | Branches of Dance landing page; QR code on flyers points here; has Python/dance joke; CTAs to `/dance-booking` and `/teaching` |
-| `/dance-booking` | Free intro class booking; bypasses Stripe; goes straight to Calendly; replace `YOUR_CALENDLY_LINK/free-intro` placeholder with real link |
+| `/dance-booking` | Free intro class booking; links to `/book` |
 
 ## Tailwind custom tokens
 
@@ -60,6 +61,12 @@ Custom colors are defined in `tailwind.config.mjs` and used throughout:
 - `dark-base` / `dark-card` / `dark-border` — dark mode surface colors
 - Fonts: `font-sans` (Inter), `font-serif` (Playfair Display), `font-mono` (JetBrains Mono)
 
-## Teaching / payments
+## Dev server
 
-`src/data/classes.js` contains Stripe payment links and the Venmo username. The `stripeLink` field on some classes still has placeholder values (`YOUR_STRIPE_PAYMENT_LINK_*`) — replace with real Stripe Payment Link URLs before those classes go live. Public payment link URLs are safe to commit; never commit Stripe secret keys.
+Dev server configs live in `.claude/launch.json`. Use `preview_start` to launch them. Default Astro dev port is 4321 — if it's in use, Astro bumps to the next available port. If the preview shows 404, stop and restart the server via `preview_stop` + `preview_start`.
+
+## Teaching / booking
+
+All class cards link to `/book` — no Stripe or Venmo in the current flow. The booking form uses **Formspree** (`https://formspree.io/f/mqejygad`) and redirects to `/booking-confirmed` after submission. Formspree emails submissions to `bojan.milinic@gmail.com`.
+
+`src/data/classes.js` is the single source of truth for class titles, prices, and durations. All classes are currently set to **$20 / 55 min**. The `stripeLink` and `venmoNote` fields are still present in the data but not used in the UI — kept for future use.

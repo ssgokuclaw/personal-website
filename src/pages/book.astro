@@ -1,0 +1,211 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { classes } from '../data/classes.js';
+---
+
+<BaseLayout
+  title="Book a Session"
+  description="Get in touch to book a Python tutoring session with Bojan Milinic."
+  navVariant="teaching"
+>
+  <main>
+
+    <!-- Header -->
+    <section class="bg-navy py-16 px-6 text-white">
+      <div class="max-w-2xl mx-auto text-center">
+        <p class="font-mono text-accent-light text-sm tracking-widest mb-4 uppercase">
+          No payment upfront · First session free
+        </p>
+        <h1 class="font-serif text-4xl md:text-5xl font-bold mb-5 leading-tight">
+          Book a session
+        </h1>
+        <p class="text-slate-300 text-lg leading-relaxed max-w-xl mx-auto">
+          Fill out the form below and Bojan will reach out within 24 hours to confirm a time.
+        </p>
+      </div>
+    </section>
+
+    <!-- Form -->
+    <section class="bg-slate-50 py-14 px-6 border-t border-slate-200">
+      <div class="max-w-xl mx-auto">
+        <form
+          name="booking"
+          method="POST"
+          action="https://formspree.io/f/mqejygad"
+          class="space-y-6 bg-white border border-slate-200 rounded-xl shadow-sm p-8"
+        >
+          <input type="hidden" name="_next" value="https://bojanmilinic.netlify.app/booking-confirmed" />
+
+          <div>
+            <label for="name" class="block text-sm font-semibold text-slate-700 mb-1.5">
+              Your name <span class="text-red-400">*</span>
+            </label>
+            <input
+              type="text"
+              id="name"
+              name="name"
+              required
+              placeholder="Jane Smith"
+              class="w-full border border-slate-300 rounded-lg px-4 py-2.5 text-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent"
+            />
+          </div>
+
+          <div>
+            <label for="email" class="block text-sm font-semibold text-slate-700 mb-1.5">
+              Email address <span class="text-red-400">*</span>
+            </label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              required
+              placeholder="jane@example.com"
+              class="w-full border border-slate-300 rounded-lg px-4 py-2.5 text-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent"
+            />
+          </div>
+
+          <div>
+            <label for="session" class="block text-sm font-semibold text-slate-700 mb-1.5">
+              Which session are you interested in?
+            </label>
+            <select
+              id="session"
+              name="session"
+              class="w-full border border-slate-300 rounded-lg px-4 py-2.5 text-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent bg-white"
+            >
+              <option value="free-intro">Free Intro Session (30 min)</option>
+              {classes.map((cls) => (
+                <option value={cls.id}>{cls.title} — ${cls.price}/session</option>
+              ))}
+              <option value="not-sure">Not sure yet</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="format" class="block text-sm font-semibold text-slate-700 mb-1.5">
+              Online or in-person?
+            </label>
+            <select
+              id="format"
+              name="format"
+              class="w-full border border-slate-300 rounded-lg px-4 py-2.5 text-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent bg-white"
+            >
+              <option value="online">Online</option>
+              <option value="in-person">In-person</option>
+              <option value="either">Either works for me</option>
+            </select>
+            <p
+              id="online-tip"
+              class="mt-2 text-xs text-accent-dark bg-blue-50 border border-blue-200 rounded-lg px-3 py-2 leading-relaxed"
+            >
+              💡 <strong>Tip:</strong> Online sessions work best with two screens — one for the video call, one for your code editor. A second monitor or a tablet works great.
+            </p>
+          </div>
+
+          <div>
+            <label for="for-whom" class="block text-sm font-semibold text-slate-700 mb-1.5">
+              Who is this session for?
+            </label>
+            <select
+              id="for-whom"
+              name="for-whom"
+              class="w-full border border-slate-300 rounded-lg px-4 py-2.5 text-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent bg-white"
+            >
+              <option value="myself">Myself</option>
+              <option value="my-child">My child</option>
+              <option value="either">Either / not sure</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="background" class="block text-sm font-semibold text-slate-700 mb-1.5">
+              Student experience level and age
+            </label>
+            <input
+              type="text"
+              id="background"
+              name="background"
+              placeholder="e.g. age 14, complete beginner — or — adult, some Python experience"
+              class="w-full border border-slate-300 rounded-lg px-4 py-2.5 text-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent"
+            />
+          </div>
+
+          <div>
+            <label for="message" class="block text-sm font-semibold text-slate-700 mb-1.5">
+              Anything else you'd like me to know?
+            </label>
+            <textarea
+              id="message"
+              name="message"
+              rows="4"
+              placeholder="Goals, questions, availability, specific topics..."
+              class="w-full border border-slate-300 rounded-lg px-4 py-2.5 text-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent resize-none"
+            ></textarea>
+          </div>
+
+          <button
+            type="submit"
+            class="w-full bg-navy hover:bg-navy-light text-white font-semibold py-3 rounded-lg transition-colors text-sm tracking-wide"
+          >
+            Send Request →
+          </button>
+        </form>
+
+        <script>
+          const formatSelect = document.getElementById('format');
+          const onlineTip = document.getElementById('online-tip');
+          function updateTip() {
+            onlineTip.style.display = formatSelect.value === 'in-person' ? 'none' : '';
+          }
+          formatSelect.addEventListener('change', updateTip);
+          updateTip();
+        </script>
+
+        <p class="text-center text-slate-400 text-sm mt-6">
+          Prefer a direct email?
+          <a href="mailto:bojan.milinic@gmail.com" class="text-accent hover:underline ml-1">bojan.milinic@gmail.com</a>
+        </p>
+      </div>
+    </section>
+
+    <!-- What to expect -->
+    <section class="bg-white py-14 px-6 border-t border-slate-200">
+      <div class="max-w-2xl mx-auto">
+        <h2 class="font-serif text-2xl font-bold text-navy mb-6">What to expect</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {[
+            {
+              step: '01',
+              title: "I'll reach out",
+              desc: "Once your request comes in, I'll email you to sort out a schedule that works for both of us.",
+            },
+            {
+              step: '02',
+              title: 'We meet live',
+              desc: 'A 30-minute video call — no slides, no lectures. We talk about what you want to learn.',
+            },
+            {
+              step: '03',
+              title: 'We write real code',
+              desc: "From the first minute, you'll have a code editor open. Even if you've never coded before.",
+            },
+            {
+              step: '04',
+              title: "You decide what's next",
+              desc: 'After the session, you choose whether to book a paid session. Zero pressure either way.',
+            },
+          ].map(({ step, title, desc }) => (
+            <div class="flex gap-4">
+              <span class="font-mono text-2xl font-bold text-accent/30 shrink-0 leading-none mt-0.5">{step}</span>
+              <div>
+                <h3 class="font-semibold text-navy mb-1">{title}</h3>
+                <p class="text-slate-500 text-sm leading-relaxed">{desc}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+  </main>
+</BaseLayout>
