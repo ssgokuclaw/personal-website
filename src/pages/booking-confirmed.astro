@@ -21,42 +21,38 @@ import BaseLayout from '../layouts/BaseLayout.astro';
         </div>
 
         <p class="font-mono text-accent-light text-sm tracking-widest uppercase mb-3">
-          Payment confirmed
+          Request received
         </p>
         <h1 class="font-serif text-4xl md:text-5xl font-bold mb-4 leading-tight">
-          Now pick your session time
+          You're all set
         </h1>
         <p class="text-slate-300 text-lg leading-relaxed max-w-xl mx-auto">
-          Your payment went through. Use the calendar below to choose a time that works for you — I'll send a video call link before we meet.
+          Bojan will follow up within 24 hours to confirm a time. Keep an eye on your inbox.
         </p>
       </div>
     </section>
 
-    <!-- Calendly embed -->
-    <section class="px-4 py-12">
-      <div class="max-w-3xl mx-auto">
-        <p class="text-slate-400 text-sm text-center font-mono mb-8 tracking-wide">
-          Select a date and time below
+    <!-- Next steps -->
+    <section class="px-6 py-14 text-center">
+      <div class="max-w-md mx-auto space-y-6">
+        <p class="text-slate-400 text-sm leading-relaxed">
+          In the meantime, feel free to browse the session options or get in touch directly.
         </p>
-
-        <!-- REPLACE: your Calendly link here -->
-        <div
-          class="calendly-inline-widget rounded-xl overflow-hidden border border-dark-border shadow-lg"
-          data-url="https://calendly.com/bojan-milinic/python-coding-coach?background_color=0f172a&text_color=cbd5e1&primary_color=3b82f6"
-          style="min-width:320px;height:700px;"
-        ></div>
-        <script type="text/javascript" src="https://assets.calendly.com/assets/external/widget.js" async></script>
+        <div class="flex flex-wrap justify-center gap-4">
+          <a
+            href="/teaching"
+            class="px-6 py-2.5 bg-accent hover:bg-accent-dark text-white rounded-lg text-sm font-semibold transition-colors"
+          >
+            Browse Sessions
+          </a>
+          <a
+            href="mailto:bojan.milinic@usgs.gov"
+            class="px-6 py-2.5 bg-dark-card hover:bg-dark-border text-slate-300 border border-dark-border rounded-lg text-sm font-semibold transition-colors"
+          >
+            Email Bojan
+          </a>
+        </div>
       </div>
-    </section>
-
-    <!-- Footer note -->
-    <section class="px-6 pb-16 text-center">
-      <p class="text-slate-500 text-sm">
-        Questions? Reach out at
-        <a href="mailto:bojan.milinic@usgs.gov" class="text-accent-light hover:underline">
-          bojan.milinic@usgs.gov
-        </a>
-      </p>
     </section>
 
   </main>
