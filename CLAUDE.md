@@ -6,6 +6,20 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **Always verify before handing off:** After any code change, run `npm run build` and confirm it succeeds before telling the user to try it. If there are errors, fix them first.
 
+## AI Website Manager Role
+
+The most useful AI agent for this repo is a website manager: a proactive maintainer who understands the site structure, watches for stale content, recommends improvements, and carries out approved updates.
+
+This agent should:
+
+- Maintain the live Astro site, including routes, Markdown content, archive snapshots, navigation, build health, and documentation.
+- Recommend content, design, SEO, accessibility, performance, and maintenance improvements, but ask for approval before making broad or user-facing changes that are not already requested.
+- Keep the Writing workflow clear: live posts use `src/content/posts/`; live Lab notes use `src/content/lab/`; Pelican is archive-only.
+- Preserve the distinction between the professional site, teaching pages, Writing, Lab, and archived blog experiments.
+- Run `npm run build` after changes and report meaningful verification results.
+- Prefer small, understandable updates over sweeping redesigns unless the user explicitly approves a larger direction.
+- Notice follow-up opportunities such as stale domain notes, outdated forms, broken archive links, missing post metadata, or unclear reader navigation.
+
 ## Commands
 
 ```bash
@@ -18,9 +32,9 @@ npm run preview  # preview the production build locally
 
 Changes flow through three remotes in order:
 
-1. **Local mac mini** → commit and push to `ssgokuclaw/personal-website` (origin)
-2. **ssgokuclaw fork** → sync to `BojanMilinic/personal-website` (via PR or fork sync)
-3. **BojanMilinic repo** → Netlify auto-deploys from this repo's `main` branch
+1. **Local mac mini** -> commit and push to `ssgokuclaw/personal-website` (origin)
+2. **ssgokuclaw fork** -> sync to `BojanMilinic/personal-website` (via PR or fork sync)
+3. **BojanMilinic repo** -> Netlify auto-deploys from this repo's `main` branch
 
 Pushing to `origin` (ssgokuclaw) alone does **not** update the live site. The BojanMilinic repo is what Netlify watches.
 
@@ -28,14 +42,18 @@ Pushing to `origin` (ssgokuclaw) alone does **not** update the live site. The Bo
 
 All site content is static and data-driven. The pattern is:
 
-- **`src/data/*.js`** — plain JS export objects/arrays that are the single source of truth for all page content (projects, CV, teaching classes, payment links)
-- **`src/pages/*.astro`** — one file per route; imports from `src/data/`, filters/transforms data, and renders HTML
-- **`src/components/*.astro`** — reusable UI pieces (`ProjectCard`, `ClassCard`, `Nav`, `Footer`)
-- **`src/layouts/BaseLayout.astro`** — single layout wrapping all pages; accepts `title`, `description`, and `darkMode` props; dark mode (`bg-dark-base`) is used on all current pages
+- **`src/data/*.js`** - plain JS export objects/arrays that are the single source of truth for structured page content (projects, CV, teaching classes, payment links)
+- **`src/content/posts/*.md`** - Astro Markdown source for live Writing posts; adding a Markdown file here creates a generated `/posts/[slug]` route during `npm run build`
+- **`src/content/lab/*.md`** - Astro Markdown source for live Lab notes; adding a Markdown file here creates a generated `/lab/[slug]` route during `npm run build`
+- **`src/pages/*.astro`** - one file per route; imports from `src/data/` or `src/content/`, filters/transforms data, and renders HTML
+- **`src/components/*.astro`** - reusable UI pieces (`ProjectCard`, `ClassCard`, `Nav`, `Footer`)
+- **`src/layouts/BaseLayout.astro`** - single layout wrapping all pages; accepts `title`, `description`, and `darkMode` props; dark mode (`bg-dark-base`) is used on all current pages
 
-**To add or edit content**, edit the relevant file in `src/data/` — no page or component changes needed.
+**To add or edit structured page content**, edit the relevant file in `src/data/` - no page or component changes needed.
 
-**Nav variants:** Two nav variants are set via `navVariant` prop on `BaseLayout`. `'professional'` (default): brand→`/`, links: CV · Projects · Contact. `'teaching'`: brand→`/teaching`, links: Teaching · Globe · Notebooks. The two sides intentionally have no cross-links.
+**To add or edit Writing/Lab entries**, edit Markdown files in `src/content/posts/` or `src/content/lab/`. Astro renders these files directly. Do not run Pelican for normal live-site posts; Pelican is only preserved as a historical blog experiment/archive.
+
+**Nav variants:** Two nav variants are set via `navVariant` prop on `BaseLayout`. `professional` (default): brand -> `/`, links: CV, Projects, Writing, Contact. `teaching`: brand -> `/teaching`, links: Teaching, Globe, Notebooks. The two sides intentionally have no cross-links.
 
 ## Pages
 
@@ -43,6 +61,13 @@ All site content is static and data-driven. The pattern is:
 |---|---|
 | `/` | Home / CV (professional nav) |
 | `/projects` | Projects list (professional nav) |
+| `/posts` | Writing index generated from `src/content/posts/*.md` |
+| `/posts/[slug]` | Individual Writing post generated by Astro from Markdown |
+| `/lab` | Public blog-building lab notes generated from `src/content/lab/*.md` |
+| `/lab/[slug]` | Individual Lab note generated by Astro from Markdown |
+| `/blog-archive` | Links to archived experiment snapshots |
+| `/blog-archive/01-html-css/index.html` | Static archived HTML/CSS experiment copied into `public/blog-archive/` |
+| `/blog-archive/02-pelican/index.html` | Static archived Pelican output copied into `public/blog-archive/` |
 | `/contact` | Contact (professional nav) |
 | `/teaching` | Teaching overview (teaching nav) |
 | `/globe` | Interactive globe (teaching nav) |
@@ -56,17 +81,22 @@ All site content is static and data-driven. The pattern is:
 
 Custom colors are defined in `tailwind.config.mjs` and used throughout:
 
-- `navy` / `navy-dark` / `navy-light` — nav and hero backgrounds
-- `accent` / `accent-dark` / `accent-light` — blue highlight color
-- `dark-base` / `dark-card` / `dark-border` — dark mode surface colors
+- `navy` / `navy-dark` / `navy-light` - nav and hero backgrounds
+- `accent` / `accent-dark` / `accent-light` - blue highlight color
+- `dark-base` / `dark-card` / `dark-border` - dark mode surface colors
 - Fonts: `font-sans` (Inter), `font-serif` (Playfair Display), `font-mono` (JetBrains Mono)
 
 ## Dev server
 
-Dev server configs live in `.claude/launch.json`. Use `preview_start` to launch them. Default Astro dev port is 4321 — if it's in use, Astro bumps to the next available port. If the preview shows 404, stop and restart the server via `preview_stop` + `preview_start`.
+Dev server configs live in `.claude/launch.json`. Use `preview_start` to launch them. Default Astro dev port is 4321 - if it's in use, Astro bumps to the next available port. If the preview shows 404, stop and restart the server via `preview_stop` + `preview_start`.
 
 ## Teaching / booking
 
-All class cards link to `/book` — no Stripe or Venmo in the current flow. The booking form uses **Formspree** (`https://formspree.io/f/mqejygad`) and redirects to `/booking-confirmed` after submission. Formspree emails submissions to `bojan.milinic@gmail.com`.
+All class cards link to `/book` - no Stripe or Venmo in the current flow. The booking form uses **Formspree** (`https://formspree.io/f/mqejygad`) and redirects to `/booking-confirmed` after submission. Formspree emails submissions to `bojan.milinic@gmail.com`.
 
-`src/data/classes.js` is the single source of truth for class titles, prices, and durations. All classes are currently set to **$20 / 55 min**. The `stripeLink` and `venmoNote` fields are still present in the data but not used in the UI — kept for future use.
+`src/data/classes.js` is the single source of truth for class titles, prices, and durations. All classes are currently set to **$20 / 55 min**. The `stripeLink` and `venmoNote` fields are still present in the data but not used in the UI - kept for future use.
+
+## Link checks
+
+Copied static archive content should prefer explicit `index.html` links instead of directory-only URLs. Astro's dev server can 404 on copied static directory URLs even when the built `dist/` folder contains an `index.html`.
+

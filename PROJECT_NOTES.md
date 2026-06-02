@@ -63,3 +63,69 @@ Pushing to `origin` alone does **not** update the live site.
 - [ ] Add `upstream` remote for BojanMilinic repo
 - [ ] Consider adding availability/timezone and goal fields to `/book` form
 - [ ] Confirm Formspree email notifications are active in dashboard
+
+---
+
+## Writing / blog integration
+
+The live Writing section is rendered by Astro, not Pelican. The integration is working locally as of 2026-06-02.
+
+Normal publishing workflow:
+
+1. Add or edit Markdown in `src/content/posts/`
+2. Use YAML frontmatter for `title`, `date`, `summary`, `tags`, `category`, and `type`
+3. Run `npm run build`
+4. Astro generates `/posts` and `/posts/[slug]` into `dist/`
+
+Lab notes work the same way under `src/content/lab/`, generating `/lab` and `/lab/[slug]`.
+
+Pelican is only preserved as an experiment/archive. Only run Pelican when refreshing the historical Pelican snapshot that gets copied to `public/blog-archive/02-pelican/`.
+
+Archive link note:
+
+- The HTML/CSS archive index uses `Back to blog archive` and links to `../index.html`.
+- In copied Pelican archive HTML, replace home links like `href="./"` and `href="../"` with explicit `index.html` targets.
+- Astro's dev server can 404 on copied static directory URLs such as `/blog-archive/02-pelican/`, while explicit `index.html` URLs work reliably.
+- Nested copied archive folders should also use explicit targets such as `04-pythonland/index.html`.
+- If the Pelican archive is regenerated and recopied, rerun that link cleanup before testing.
+
+Current live routes:
+
+- `/posts` lists Writing posts from `src/content/posts/`
+- `/posts/[slug]` renders individual Writing posts
+- `/lab` lists public workflow notes from `src/content/lab/`
+- `/lab/[slug]` renders individual Lab notes
+- `/blog-archive` links to preserved experiment snapshots
+- `/blog-archive/01-html-css/index.html` serves the manual HTML/CSS experiment snapshot
+- `/blog-archive/02-pelican/index.html` serves the generated Pelican experiment snapshot
+
+Verification completed:
+
+- `npm run build` succeeded
+- Full built-site link crawl passed across 64 HTML pages, 889 local references, and 86 anchor links
+- Live dev-server route/link check passed across 64 pages and 70 unique linked local targets
+- Writing, Lab, and archive navigation use valid explicit targets, including copied static archive pages
+- External HTTP link probe found no user-clickable dead links; Google Fonts preconnect hosts and the Formspree POST endpoint are expected not to behave like normal clickable pages
+
+---
+
+## AI website manager
+
+The ideal AI helper for this site is a website manager rather than only a code editor.
+
+Responsibilities:
+
+- Maintain and improve the live Astro site over time.
+- Recommend updates to content, layout, navigation, SEO, accessibility, performance, and documentation.
+- Keep track of stale notes, deployment details, form redirects, archive links, and publishing workflow.
+- Propose improvements for approval before making broad changes.
+- Make approved changes in small, understandable steps.
+- Verify work with `npm run build` and, when relevant, preview or route checks.
+
+Current operating model:
+
+- Astro owns the live site.
+- Markdown in `src/content/posts/` becomes Writing pages.
+- Markdown in `src/content/lab/` becomes Lab pages.
+- Pelican is only an archived experiment, not the normal publishing engine.
+- The manager should preserve the old experiments while improving the current public site.
