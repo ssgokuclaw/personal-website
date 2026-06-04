@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 220" role="img" aria-label="Green planet for Python Projects">
+  <defs>
+    <radialGradient id="g" cx="34%" cy="27%" r="72%">
+      <stop offset="0" stop-color="#d7ffd4"/>
+      <stop offset="0.36" stop-color="#95ff8f"/>
+      <stop offset="0.74" stop-color="#256b33"/>
+      <stop offset="1" stop-color="#092612"/>
+    </radialGradient>
+  </defs>
+  <circle cx="110" cy="110" r="92" fill="url(#g)"/>
+  <rect x="73" y="76" width="72" height="58" rx="8" fill="#07210e" opacity=".5"/>
+  <path d="M84 95h49M84 113h34" stroke="#f8f4ff" stroke-width="8" stroke-linecap="round" opacity=".8"/>
+  <path d="M50 153c35 16 82 17 120-3" stroke="#baffb6" stroke-width="10" fill="none" opacity=".7"/>
+</svg>

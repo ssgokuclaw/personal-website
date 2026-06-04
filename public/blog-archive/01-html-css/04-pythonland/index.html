@@ -1,0 +1,77 @@
+<!--
+title: Pythonland
+date: 2026-05-31
+slug: pythonland
+tags: [blog, experiment, experiment-04, html, css, python]
+-->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pythonland</title>
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <div class="page">
+      <nav class="top-nav" aria-label="Pythonland navigation">
+        <a href="../03-victimhood-mentality.html">&larr; Previous post</a>
+        <a href="../index.html">Experiment home</a>
+        <a href="../../02-pelican/fighting-pointlessness.html">Next Pelican article &rarr;</a>
+      </nav>
+
+      <header class="hero">
+        <p class="eyebrow">Post 04 / Shared CSS mini-site</p>
+        <h1>Pythonland</h1>
+        <p>Choose a planet to explore a possible path into Python. Every page in this mini-site uses the same stylesheet, so one CSS file controls the whole little universe.</p>
+      </header>
+
+      <main>
+        <section class="world-select" aria-label="Python learning planets">
+          <a class="planet-link" href="past.html">
+            <span class="planet past" aria-hidden="true"></span>
+            <strong>Python Past</strong>
+            <span>Compare Python with C and see why high-level languages changed the feel of programming.</span>
+          </a>
+
+          <a class="planet-link" href="basics.html">
+            <span class="planet basics" aria-hidden="true"></span>
+            <strong>Syntax Station</strong>
+            <span>Practice the beginner building blocks: values, loops, functions, files, and errors.</span>
+          </a>
+
+          <a class="planet-link" href="projects.html">
+            <span class="planet projects" aria-hidden="true"></span>
+            <strong>Project Planet</strong>
+            <span>Learn by making scripts, tools, small apps, and automations that actually do something.</span>
+          </a>
+
+          <a class="planet-link" href="data.html">
+            <span class="planet data" aria-hidden="true"></span>
+            <strong>Data Moon</strong>
+            <span>Use Python to clean, inspect, chart, and understand messy information.</span>
+          </a>
+
+          <a class="planet-link" href="future.html">
+            <span class="planet future" aria-hidden="true"></span>
+            <strong>AI Orbit</strong>
+            <span>Explore Python with AI assistants, APIs, generated code, and human judgment.</span>
+          </a>
+        </section>
+
+        <section class="panel">
+          <h2>The HTML/CSS Lesson</h2>
+          <p>This page and all five planet pages include the same line in the document head:</p>
+          <div class="mission">
+            <p><code>&lt;link rel="stylesheet" href="style.css"&gt;</code></p>
+          </div>
+          <p>That means one CSS file can create a shared visual identity across many HTML pages. Change the background, navigation, typography, or planet cards in <code>style.css</code>, and the whole Pythonland bundle changes together.</p>
+        </section>
+      </main>
+
+      <footer>
+        <p>Inspired by old web portal pages where navigation felt like a place you could wander through.</p>
+      </footer>
+    </div>
+  </body>
+</html>

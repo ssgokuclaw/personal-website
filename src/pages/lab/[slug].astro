@@ -1,0 +1,110 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const archiveLinks: Record<string, string> = {
+  '01-html-css': '/blog-archive/01-html-css/index.html',
+  '02-pelican': '/blog-archive/02-pelican/index.html',
+};
+
+export async function getStaticPaths() {
+  const notes = await getCollection('lab');
+  return notes.map((note) => ({
+    params: { slug: note.slug },
+    props: { note },
+  }));
+}
+
+const { note } = Astro.props;
+const { Content } = await note.render();
+const archiveHref = archiveLinks[note.slug];
+
+const formatDate = (date: Date) =>
+  new Intl.DateTimeFormat('en', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  }).format(date);
+---
+
+<BaseLayout
+  title={note.data.title}
+  description={note.data.summary}
+  darkMode={true}
+>
+  <main class="max-w-3xl mx-auto px-6 py-14">
+    <p class="mb-8">
+      <a href="/lab" class="text-sm text-accent-light hover:text-white transition-colors">
+        &larr; Lab
+      </a>
+    </p>
+
+    <article>
+      <header class="mb-10 border-b border-dark-border pb-8">
+        <div class="flex flex-wrap items-center gap-3 mb-4 font-mono text-xs text-slate-500">
+          <time datetime={note.data.date.toISOString()}>{formatDate(note.data.date)}</time>
+          {note.data.workflow && <span>{note.data.workflow}</span>}
+          {note.data.workflowStatus && <span>{note.data.workflowStatus}</span>}
+        </div>
+        <h1 class="font-serif text-4xl md:text-5xl font-bold text-white leading-tight mb-5">
+          {note.data.title}
+        </h1>
+        <p class="text-slate-400 text-lg leading-relaxed">{note.data.summary}</p>
+        {archiveHref && (
+          <p class="mt-6">
+            <a href={archiveHref} class="text-accent-light hover:text-white transition-colors">
+              View archived experiment
+            </a>
+          </p>
+        )}
+      </header>
+
+      <div class="writing-body">
+        <Content />
+      </div>
+    </article>
+  </main>
+</BaseLayout>
+
+<style>
+  .writing-body {
+    color: rgb(203 213 225);
+    font-size: 1.0625rem;
+    line-height: 1.85;
+  }
+
+  .writing-body :global(p) {
+    margin: 1.35rem 0;
+  }
+
+  .writing-body :global(h1) {
+    display: none;
+  }
+
+  .writing-body :global(h2) {
+    color: white;
+    font-family: "Playfair Display", Georgia, serif;
+    font-size: 1.75rem;
+    font-weight: 700;
+    line-height: 1.25;
+    margin: 2.5rem 0 1rem;
+  }
+
+  .writing-body :global(ul),
+  .writing-body :global(ol) {
+    margin: 1.25rem 0;
+    padding-left: 1.5rem;
+  }
+
+  .writing-body :global(li) {
+    margin: 0.5rem 0;
+  }
+
+  .writing-body :global(a) {
+    color: rgb(96 165 250);
+  }
+
+  .writing-body :global(a:hover) {
+    color: white;
+  }
+</style>

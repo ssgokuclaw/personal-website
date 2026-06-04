@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 220" role="img" aria-label="Purple planet for Python Data">
+  <defs>
+    <radialGradient id="g" cx="34%" cy="27%" r="72%">
+      <stop offset="0" stop-color="#f4e8ff"/>
+      <stop offset="0.36" stop-color="#b777ff"/>
+      <stop offset="0.74" stop-color="#402080"/>
+      <stop offset="1" stop-color="#170b34"/>
+    </radialGradient>
+  </defs>
+  <circle cx="110" cy="110" r="92" fill="url(#g)"/>
+  <path d="M67 139l24-31 24 17 35-52" fill="none" stroke="#ffe66f" stroke-width="11" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="91" cy="108" r="7" fill="#fff"/>
+  <circle cx="115" cy="125" r="7" fill="#fff"/>
+  <circle cx="150" cy="73" r="7" fill="#fff"/>
+</svg>

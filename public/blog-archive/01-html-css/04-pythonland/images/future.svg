@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 220" role="img" aria-label="Pink planet for Python Future">
+  <defs>
+    <radialGradient id="g" cx="34%" cy="27%" r="72%">
+      <stop offset="0" stop-color="#ffe0f6"/>
+      <stop offset="0.36" stop-color="#ff69c8"/>
+      <stop offset="0.74" stop-color="#8d1f7a"/>
+      <stop offset="1" stop-color="#300b2b"/>
+    </radialGradient>
+  </defs>
+  <circle cx="110" cy="110" r="92" fill="url(#g)"/>
+  <ellipse cx="110" cy="112" rx="112" ry="27" fill="none" stroke="#74f7ff" stroke-width="11" opacity=".78" transform="rotate(-16 110 112)"/>
+  <circle cx="84" cy="92" r="8" fill="#fff7b8"/>
+  <circle cx="128" cy="126" r="6" fill="#fff7b8"/>
+  <circle cx="147" cy="86" r="5" fill="#fff7b8"/>
+</svg>

@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 220" role="img" aria-label="Blue planet for Python Basics">
+  <defs>
+    <radialGradient id="g" cx="34%" cy="27%" r="72%">
+      <stop offset="0" stop-color="#e4fff8"/>
+      <stop offset="0.36" stop-color="#74f7ff"/>
+      <stop offset="0.74" stop-color="#174d88"/>
+      <stop offset="1" stop-color="#07152f"/>
+    </radialGradient>
+  </defs>
+  <circle cx="110" cy="110" r="92" fill="url(#g)"/>
+  <path d="M47 91c26-18 74-20 126 4" fill="none" stroke="#f8f4ff" stroke-width="10" opacity=".62"/>
+  <path d="M51 135c38 16 75 16 119-2" fill="none" stroke="#162089" stroke-width="9" opacity=".55"/>
+</svg>

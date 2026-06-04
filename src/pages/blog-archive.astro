@@ -1,0 +1,51 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const archives = [
+  {
+    href: '/blog-archive/01-html-css/index.html',
+    title: '01 HTML/CSS',
+    description: 'The first hand-built blog experiment, with plain HTML pages, images, links, and shared CSS.',
+    label: 'Manual pages',
+  },
+  {
+    href: '/blog-archive/02-pelican/index.html',
+    title: '02 Pelican',
+    description: 'The generated static output from the Pelican experiment, preserved as a browsable snapshot.',
+    label: 'Generated site',
+  },
+];
+---
+
+<BaseLayout
+  title="Blog Archive"
+  description="Archived blog-building experiments"
+  darkMode={true}
+>
+  <main class="max-w-4xl mx-auto px-6 py-16">
+    <section class="mb-12">
+      <p class="font-mono text-accent-light text-sm mb-3">// archive</p>
+      <h1 class="font-serif text-4xl md:text-5xl font-bold text-white mb-5 leading-tight">
+        Blog Archive
+      </h1>
+      <p class="text-slate-400 text-lg leading-relaxed max-w-2xl">
+        Preserved snapshots from earlier blog-building experiments. These are historical artifacts, while the current Writing section is rendered directly by Astro.
+      </p>
+    </section>
+
+    <section class="grid grid-cols-1 md:grid-cols-2 gap-5">
+      {archives.map((archive) => (
+        <a
+          href={archive.href}
+          class="group block border border-dark-border bg-dark-card rounded-lg p-6 hover:border-accent/40 transition-colors"
+        >
+          <p class="font-mono text-xs text-slate-500 mb-3">{archive.label}</p>
+          <h2 class="font-serif text-2xl font-semibold text-white mb-3 group-hover:text-accent-light transition-colors">
+            {archive.title}
+          </h2>
+          <p class="text-slate-400 leading-relaxed">{archive.description}</p>
+        </a>
+      ))}
+    </section>
+  </main>
+</BaseLayout>

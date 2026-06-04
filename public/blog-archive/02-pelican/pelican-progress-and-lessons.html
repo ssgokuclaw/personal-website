@@ -1,0 +1,122 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+        <head>
+                        <meta charset="utf-8" />
+                        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+                        <meta name="generator" content="Pelican" />
+                        <title>Pelican Progress and Lessons So Far</title>
+                        <link rel="stylesheet" href="./theme/css/main.css" />
+    <meta name="description" content="A short summary of the Pelican setup, the first posts, and the main lessons from moving beyond hand-written HTML." />
+        </head>
+
+        <body id="index" class="home">
+                <header id="banner" class="body">
+                        <h1><a href="./index.html">bojanmilinic_blog</a></h1>
+                        <nav><ul>
+                                                <li><a href="./category/essays.html">Essays</a></li>
+                                                <li class="active"><a href="./category/lab.html">Lab</a></li>
+                        </ul></nav>
+                </header><!-- /#banner -->
+  <section id="content" class="body">
+    <article>
+      <header>
+        <h1 class="entry-title">
+          <a href="./pelican-progress-and-lessons.html" rel="bookmark"
+             title="Permalink to Pelican Progress and Lessons So Far">Pelican Progress and Lessons So Far</a></h1>
+      </header>
+
+      <div class="entry-content">
+<footer class="post-info">
+        <abbr class="published" title="2026-06-01T00:00:00-04:00">
+                Published: Mon 01 June 2026
+        </abbr>
+
+                <address class="vcard author">
+                        By                                 <a class="url fn" href="./author/bojan-milinic.html">Bojan Milinic</a>
+                </address>
+        <p>In <a href="./category/lab.html">Lab</a>.</p>
+<p>tags: <a href="./tag/pelican.html">pelican</a> <a href="./tag/markdown.html">markdown</a> <a href="./tag/static-site-generator.html">static-site-generator</a> <a href="./tag/lab.html">lab</a> <a href="./tag/workflow.html">workflow</a> </p>        
+</footer><!-- /.post-info -->        <p>This note summarizes what has happened so far in the Pelican experiment.</p>
+<p>The blog started with a plain HTML and CSS experiment. That first version made the basic mechanics visible: pages, links, folders, images, metadata comments, and shared stylesheets. The Pythonland post showed how one folder could act like a small multi-page bundle, with one <code>style.css</code> file controlling the look of several related HTML pages.</p>
+<p>The second experiment introduced Pelican, a static site generator. Instead of writing every final HTML page by hand, the workflow now starts with Markdown files in the shared root <code>content/</code> folder. Pelican reads those files, applies configuration and templates, and generates finished HTML into <code>experiments/02-pelican/output/</code>.</p>
+<h2>What Has Been Set Up</h2>
+<ul>
+<li>A UV-created virtual environment lives inside <code>experiments/02-pelican/.venv/</code>.</li>
+<li>Pelican is installed and working inside that environment.</li>
+<li><code>experiments/02-pelican/pelicanconf.py</code> controls the local Pelican settings.</li>
+<li><code>experiments/02-pelican/publishconf.py</code> exists for future publishing settings.</li>
+<li><code>experiments/02-pelican/tasks.py</code> and <code>experiments/02-pelican/Makefile</code> were generated as helper command files.</li>
+<li><code>content/posts/</code> now contains durable Markdown source posts.</li>
+<li><code>content/lab/</code> contains durable lab notes about the workflows.</li>
+<li><code>experiments/02-pelican/output/</code> contains the generated static site.</li>
+<li><code>RELATIVE_URLS = True</code> was enabled so generated pages can find their CSS when opened locally or from a nested folder.</li>
+</ul>
+<h2>Posts Created</h2>
+<p>The first real Pelican article was:</p>
+<ul>
+<li><code>fighting-pointlessness.md</code></li>
+</ul>
+<p>That post explored the feeling of pointlessness and how meaning can return in small, practical units.</p>
+<p>The second article was:</p>
+<ul>
+<li><code>kendrick-lamar-and-watching-your-judgements.md</code></li>
+</ul>
+<p>That post used Kendrick Lamar, "Worldwide Steppers," "Savior," and Killer Mike's "Something for the Junkies" as a way to reflect on judgement, hypocrisy, and the danger of assuming we would act better than others under the same pressures.</p>
+<p>This note is more of a lab entry than a normal essay, so it now lives in <code>content/lab/</code>.</p>
+<h2>What Was Learned</h2>
+<p>Markdown is a better source format for durable posts than hand-written HTML. It keeps the writing cleaner and lets the generator handle the repetitive page structure.</p>
+<p>Pelican creates more than just individual posts. It also generates indexes, archives, categories, tags, author pages, and article pages. That means navigation can become more automatic as the blog grows.</p>
+<p>The generated HTML still depends on configuration. When CSS looked broken, the issue was not the stylesheet itself. The generated page was using root-relative links like <code>/theme/css/main.css</code>, which worked in some hosting situations but failed when opening the file directly. Switching to relative URLs fixed that.</p>
+<p>The <code>Makefile</code> and <code>tasks.py</code> files are convenience layers. They are shortcuts for build, serve, clean, and publish commands. For now, the clearest command is still the direct Pelican command:</p>
+<div class="highlight"><pre><span></span><code><span class="p">.\.</span><span class="n">venv</span><span class="p">\</span><span class="n">Scripts</span><span class="p">\</span><span class="n">python</span><span class="p">.</span><span class="n">exe</span> <span class="n">-m</span> <span class="n">pelican</span> <span class="n">-s</span> <span class="n">pelicanconf</span><span class="p">.</span><span class="n">py</span>
+</code></pre></div>
+
+<p>The <code>experiments/02-pelican/example_comparisons/</code> folder was used as a local design sandbox. It contained five small Pelican sites with different styling approaches and screenshots. That folder is intentionally ignored by Git because it is useful for exploration but not part of the main experiment.</p>
+<h2>Open Questions</h2>
+<p>The normal posts now live in the durable source folder:</p>
+<div class="highlight"><pre><span></span><code>content/
+  posts/
+  lab/
+</code></pre></div>
+
+<p>Another open question is how to host the site. The simplest option is to deploy the generated <code>experiments/02-pelican/output/</code> folder. A better long-term option is to configure Netlify to install Pelican, run the build, and publish the generated output automatically.</p>
+<h2>Next Steps</h2>
+<ol>
+<li>Review the existing Markdown posts for tone, metadata, and order.</li>
+<li>Decide whether lab notes and normal posts should share the same Pelican site or become separate sections.</li>
+<li>Choose a visual direction for the real Pelican theme.</li>
+<li>Decide whether generated <code>output/</code> should be committed, ignored, or treated only as deploy output.</li>
+<li>Test a Netlify deployment path.</li>
+</ol>
+<p>The main lesson so far is that a static site generator changes the work. Instead of hand-maintaining every page, the work shifts toward writing good source files, setting clear metadata, choosing useful structure, and trusting the build step to produce the site.</p>
+      </div><!-- /.entry-content -->
+
+    </article>
+  </section>
+                <section id="extras" class="body">
+                                <div class="blogroll">
+                                        <h2>links</h2>
+                                        <ul>
+                                                        <li><a href="https://getpelican.com/">Pelican</a></li>
+                                                        <li><a href="https://www.python.org/">Python.org</a></li>
+                                                        <li><a href="https://palletsprojects.com/p/jinja/">Jinja2</a></li>
+                                        </ul>
+                                </div><!-- /.blogroll -->
+                                <div class="social">
+                                        <h2>social</h2>
+                                        <ul>
+
+                                        </ul>
+                                </div><!-- /.social -->
+                </section><!-- /#extras -->
+
+                <footer id="contentinfo" class="body">
+                        <address id="about" class="vcard body">
+                                Proudly powered by <a rel="nofollow" href="https://getpelican.com/">Pelican</a>, which takes great advantage of <a rel="nofollow" href="https://www.python.org/">Python</a>.
+                        </address><!-- /#about -->
+
+                        <p>The theme is by <a rel="nofollow" href="https://www.smashingmagazine.com/2009/08/designing-a-html-5-layout-from-scratch/">Smashing Magazine</a>, thanks!</p>
+                </footer><!-- /#contentinfo -->
+
+        </body>
+</html>

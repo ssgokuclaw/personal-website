@@ -1,0 +1,230 @@
+<!--
+title: Welcome to the blog (notes)
+date: 2026-05-31
+slug: welcome-note
+tags: [experiment, experiment-01, tutorial, html]
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>HTML Elements & Attributes - Examples</title>
+<meta name="description" content="Compact examples of common HTML elements and attributes for learning and reference.">
+<style>
+:root{--max:900px;--muted:#666}
+body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;max-width:var(--max);margin:2rem auto;padding:1rem;color:#111}
+header,section{margin:1.25rem 0}
+pre{background:#f6f8fa;padding:.5rem;border-radius:6px;overflow:auto}
+code{font-family:ui-monospace,monospace;font-size:0.95em}
+.muted{color:var(--muted)}
+nav a{margin-right:.6rem}
+table{border-collapse:collapse;width:100%}
+table td,table th{border:1px solid #ddd;padding:.4rem}
+.grid{display:grid;gap:.5rem;grid-template-columns:1fr 1fr}
+.demo-box{padding:.6rem;border-radius:6px;background:#fff;border:1px solid #eee}
+.big-red{color:#c00;font-size:20px}
+.right{float:right;margin-left:1rem}
+</style>
+</head>
+<body>
+<header>
+<h1>HTML Elements & Attributes - Compact Examples</h1>
+<p class="muted">A simple reference showing common tags and attributes used in the W3Schools HTML tutorial.</p>
+<nav aria-label="quick links">
+<a href="#structure">Structure</a>
+<a href="#text">Text</a>
+<a href="#character-entities">Character Entities</a>
+<a href="#links-media">Links & Media</a>
+<a href="#lists-tables">Lists & Tables</a>
+<a href="#forms">Forms</a>
+<a href="#semantic">Semantic</a>
+<a href="01-welcome.html">Back to post</a>
+</nav>
+</header>
+
+<section id="structure">
+<h2>Document Structure</h2>
+<p>Top-level items: <code>&lt;!DOCTYPE html&gt;</code>, <code>&lt;html lang="..."&gt;</code>, <code>&lt;head&gt;</code>, <code>&lt;body&gt;</code>.</p>
+<pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang="en"&gt;
+&lt;head&gt;
+&lt;meta charset="utf-8"&gt;
+&lt;title&gt;Page title&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;...&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+<p class="muted">Attributes shown: <code>lang</code>, <code>charset</code>.</p>
+</section>
+
+<section id="text">
+<h2>Text: headings, paragraphs, inline</h2>
+<div class="grid">
+<div>
+<h3>Headings</h3>
+<p><code>&lt;h1&gt;&lt;...&gt;&lt;/h1&gt;</code> through <code>&lt;h6&gt;</code>.</p>
+<h1>H1 example</h1>
+<h2>H2 example</h2>
+</div>
+<div>
+<h3>Inline</h3>
+<p><strong>&lt;strong&gt;</strong> makes text strong (<code>&lt;strong&gt;</code>), <em>&lt;em&gt;</em> emphasizes (<code>&lt;em&gt;</code>), <code>&lt;code&gt;</code> shows code.</p>
+</div>
+</div>
+<p>Line breaks and comments:</p>
+<pre><code>&lt;p&gt;First line&lt;br&gt;Second line&lt;/p&gt;
+&lt;!-- HTML comment: ignored by browser --&gt;</code></pre>
+
+<h3>CSS examples (color, size, location)</h3>
+<p>Inline style example (quick, overrides CSS):</p>
+<pre><code>&lt;p style="color:crimson; font-size:18px; text-align:center;"&gt;Styled inline text&lt;/p&gt;</code></pre>
+<div class="demo-box">
+<p style="color:crimson; font-size:18px; text-align:center;">Styled inline text</p>
+</div>
+
+<p>Class-based CSS (preferred for reuse):</p>
+<pre><code>&lt;style&gt;
+.big-red{color:#c00;font-size:20px}
+.right{float:right;margin-left:1rem}
+&lt;/style&gt;
+&lt;p class="big-red"&gt;Large red text&lt;/p&gt;
+&lt;img src="01_python.jpg" alt="Python logo" class="right" width="120"&gt;</code></pre>
+<div class="demo-box">
+<p class="big-red">Large red text</p>
+<img src="01_python.jpg" alt="Python logo" class="right" width="120">
+</div>
+
+<div class="demo-box">
+<p class="muted">Note: put image files like <code>01_python.jpg</code> inside the same folder or an <code>images/</code> directory and link with a relative path: <code>&lt;img src="images/01_python.jpg"&gt;</code>.</p>
+</div>
+</section>
+
+<section id="character-entities">
+<h2>Character Entities</h2>
+<p>Character entities let you write special characters in HTML. They usually start with <code>&amp;</code> and end with <code>;</code>.</p>
+<p>This is useful when a character has a special meaning in HTML, like <code>&lt;</code> or <code>&gt;</code>, or when you want to type a symbol like an arrow.</p>
+
+<pre><code>&lt;a href="01-welcome.html"&gt;&amp;larr; Back to welcome post&lt;/a&gt;
+&lt;p&gt;HTML tags use &amp;lt; and &amp;gt; characters.&lt;/p&gt;</code></pre>
+
+<div class="demo-box">
+<p>Rendered examples:</p>
+<p><a href="01-welcome.html">&larr; Back to welcome post</a></p>
+<p>HTML tags use &lt; and &gt; characters.</p>
+</div>
+
+<table>
+<tr><th>Entity</th><th>Rendered character</th><th>Use</th></tr>
+<tr><td><code>&amp;larr;</code></td><td>&larr;</td><td>Left arrow</td></tr>
+<tr><td><code>&amp;rarr;</code></td><td>&rarr;</td><td>Right arrow</td></tr>
+<tr><td><code>&amp;amp;</code></td><td>&amp;</td><td>Ampersand</td></tr>
+<tr><td><code>&amp;lt;</code></td><td>&lt;</td><td>Less-than sign</td></tr>
+<tr><td><code>&amp;gt;</code></td><td>&gt;</td><td>Greater-than sign</td></tr>
+<tr><td><code>&amp;quot;</code></td><td>&quot;</td><td>Double quote</td></tr>
+<tr><td><code>&amp;copy;</code></td><td>&copy;</td><td>Copyright symbol</td></tr>
+<tr><td><code>&amp;nbsp;</code></td><td>One&nbsp;space</td><td>Non-breaking space</td></tr>
+</table>
+</section>
+
+<section id="links-media">
+<h2>Links & Media</h2>
+<p>Links use <code>href</code>. Common attributes: <code>target</code>, <code>rel</code>, <code>download</code>.</p>
+<pre><code>&lt;a href="https://example.com" target="_blank" rel="noopener"&gt;External&lt;/a&gt;</code></pre>
+
+<p>Image example (relative link to a file in the same folder):</p>
+<pre><code>&lt;img src="01_python.jpg" alt="Python logo" width="200" title="Python"&gt;</code></pre>
+<div class="demo-box">
+<p>Rendered image example:</p>
+<img src="01_python.jpg" alt="Python logo" width="200" title="Python">
+</div>
+</section>
+
+<section id="lists-tables">
+<h2>Lists & Tables</h2>
+<p>Unordered and ordered lists:</p>
+<pre><code>&lt;ul&gt;
+&lt;li&gt;Item A&lt;/li&gt;
+&lt;li&gt;Item B&lt;/li&gt;
+&lt;/ul&gt;
+&lt;ol&gt;
+&lt;li&gt;First&lt;/li&gt;
+&lt;li&gt;Second&lt;/li&gt;
+&lt;/ol&gt;</code></pre>
+<div class="demo-box">
+<p>Rendered list output:</p>
+<ul>
+<li>Item A</li>
+<li>Item B</li>
+</ul>
+<ol>
+<li>First</li>
+<li>Second</li>
+</ol>
+</div>
+
+<p>Tables and attributes like <code>colspan</code> and <code>rowspan</code>:</p>
+<pre><code>&lt;table&gt;
+&lt;tr&gt;&lt;th&gt;Name&lt;/th&gt;&lt;th&gt;Score&lt;/th&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;Alice&lt;/td&gt;&lt;td&gt;95&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td colspan="2"&gt;Combined row&lt;/td&gt;&lt;/tr&gt;
+&lt;/table&gt;</code></pre>
+<div class="demo-box">
+<p>Rendered table output:</p>
+<table>
+<tr><th>Name</th><th>Score</th></tr>
+<tr><td>Alice</td><td>95</td></tr>
+<tr><td colspan="2">Combined row</td></tr>
+</table>
+</div>
+</section>
+
+<section id="forms">
+<h2>Forms & Inputs</h2>
+<p>Form attributes: <code>action</code>, <code>method</code>. Input types: <code>text</code>, <code>email</code>, <code>password</code>, <code>checkbox</code>, <code>radio</code>, <code>file</code>, <code>submit</code>.</p>
+<pre><code>&lt;form action="/submit" method="post"&gt;
+&lt;label for="name"&gt;Name:&lt;/label&gt;
+&lt;input id="name" name="name" type="text" placeholder="Your name" required maxlength="50"&gt;
+&lt;input type="email" name="email" required&gt;
+&lt;label&gt;&lt;input type="checkbox" name="agree" checked&gt; Accept&lt;/label&gt;
+&lt;button type="submit"&gt;Send&lt;/button&gt;
+&lt;/form&gt;</code></pre>
+
+<div class="demo-box">
+<p class="muted">Tip: use <code>label for="id"</code> so clicking the text focuses the input. Use <code>required</code> and <code>maxlength</code> for simple validation.</p>
+</div>
+</section>
+
+<section id="semantic">
+<h2>Semantic Elements</h2>
+<p>Use semantic tags for better structure and accessibility: <code>&lt;header&gt;</code>, <code>&lt;nav&gt;</code>, <code>&lt;main&gt;</code>, <code>&lt;article&gt;</code>, <code>&lt;section&gt;</code>, <code>&lt;aside&gt;</code>, <code>&lt;footer&gt;</code>.</p>
+<pre><code>&lt;article&gt;
+&lt;header&gt;&lt;h2&gt;Post title&lt;/h2&gt;&lt;/header&gt;
+&lt;section&gt;Content&lt;/section&gt;
+&lt;footer&gt;Meta &amp; links&lt;/footer&gt;
+&lt;/article&gt;</code></pre>
+</section>
+
+<section id="attributes-extra">
+<h2>Useful attributes &amp; ARIA</h2>
+<ul>
+<li><code>id</code> - unique identifier for anchors and scripting</li>
+<li><code>class</code> - group for styling</li>
+<li><code>data-*</code> - custom data attributes</li>
+<li><code>title</code> - advisory tooltip</li>
+<li><code>aria-label</code>, <code>aria-hidden</code> - accessibility helpers</li>
+</ul>
+<pre><code>&lt;button id="save" class="primary" data-task="save" title="Save changes" aria-label="Save"&gt;Save&lt;/button&gt;</code></pre>
+</section>
+
+<section id="scripts">
+<h2>Scripts &amp; styles</h2>
+<p>Use <code>&lt;link rel="stylesheet" href="..."&gt;</code> for stylesheets and <code>&lt;script src="..." defer&gt;</code> for scripts.</p>
+<pre><code>&lt;link rel="stylesheet" href="/styles.css"&gt;
+&lt;script src="/app.js" defer&gt;&lt;/script&gt;</code></pre>
+</section>
+
+<footer>
+<p class="muted">This page is a compact, educational reference - not an exhaustive spec. See the <a href="https://www.w3schools.com/html/default.asp" target="_blank" rel="noopener">W3Schools HTML tutorial</a> for details.</p>
+</footer>
+</body>
+</html>

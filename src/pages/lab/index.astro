@@ -1,0 +1,64 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const notes = (await getCollection('lab')).sort(
+  (a, b) => a.data.date.valueOf() - b.data.date.valueOf()
+);
+
+const formatDate = (date: Date) =>
+  new Intl.DateTimeFormat('en', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  }).format(date);
+---
+
+<BaseLayout
+  title="Lab"
+  description="Notes on blog-building experiments and workflow comparisons"
+  darkMode={true}
+>
+  <main class="max-w-4xl mx-auto px-6 py-16">
+    <section class="mb-12">
+      <p class="font-mono text-accent-light text-sm mb-3">// lab</p>
+      <h1 class="font-serif text-4xl md:text-5xl font-bold text-white mb-5 leading-tight">
+        Blog Lab
+      </h1>
+      <p class="text-slate-400 text-lg leading-relaxed max-w-2xl">
+        Notes about how the blog was built, what each workflow taught, and what should be tried next.
+      </p>
+      <div class="mt-6 flex flex-wrap gap-4 text-sm">
+        <a href="/posts" class="text-accent-light hover:text-white transition-colors">Writing</a>
+        <a href="/blog-archive" class="text-slate-400 hover:text-white transition-colors">Experiment archive</a>
+      </div>
+    </section>
+
+    <section class="space-y-5">
+      {notes.map((note) => (
+        <article class="border border-dark-border bg-dark-card rounded-lg p-6">
+          <div class="flex flex-wrap items-center gap-3 mb-3 font-mono text-xs text-slate-500">
+            <time datetime={note.data.date.toISOString()}>{formatDate(note.data.date)}</time>
+            {note.data.workflow && <span>{note.data.workflow}</span>}
+            {note.data.workflowStatus && <span>{note.data.workflowStatus}</span>}
+          </div>
+          <h2 class="font-serif text-2xl font-semibold text-white mb-3">
+            <a href={`/lab/${note.slug}`} class="hover:text-accent-light transition-colors">
+              {note.data.title}
+            </a>
+          </h2>
+          <p class="text-slate-400 leading-relaxed mb-4">{note.data.summary}</p>
+          {note.data.tags.length > 0 && (
+            <div class="flex flex-wrap gap-2">
+              {note.data.tags.map((tag) => (
+                <span class="text-xs font-mono text-slate-400 bg-slate-900/60 border border-dark-border rounded px-2 py-1">
+                  {tag}
+                </span>
+              ))}
+            </div>
+          )}
+        </article>
+      ))}
+    </section>
+  </main>
+</BaseLayout>
