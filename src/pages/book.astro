@@ -73,7 +73,7 @@ import { classes } from '../data/classes.js';
               name="session"
               class="w-full border border-slate-300 rounded-lg px-4 py-2.5 text-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent bg-white"
             >
-              <option value="free-intro">Free Intro Session (30 min)</option>
+              <option value="free-intro">Free Intro Session (55 min)</option>
               {classes.map((cls) => (
                 <option value={cls.id}>{cls.title} — ${cls.price}/session</option>
               ))}
@@ -172,7 +172,7 @@ import { classes } from '../data/classes.js';
     <section class="bg-white py-14 px-6 border-t border-slate-200">
       <div class="max-w-2xl mx-auto">
         <h2 class="font-serif text-2xl font-bold text-navy mb-6">What to expect</h2>
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {[
             {
               step: '01',
@@ -182,15 +182,10 @@ import { classes } from '../data/classes.js';
             {
               step: '02',
               title: 'We meet live',
-              desc: 'A 30-minute video call — no slides, no lectures. We talk about what you want to learn.',
+              desc: 'A 55-minute video call. We talk about what you want to learn and go through an intro session. We can start by writing real code.',
             },
             {
               step: '03',
-              title: 'We write real code',
-              desc: "From the first minute, you'll have a code editor open. Even if you've never coded before.",
-            },
-            {
-              step: '04',
               title: "You decide what's next",
               desc: 'After the session, you choose whether to book a paid session. Zero pressure either way.',
             },
