@@ -15,7 +15,7 @@ const professionalLinks = [
 
 const teachingLinks = [
   { href: '/teaching', label: 'Teaching' },
-  { href: '/globe', label: 'Globe' },
+  { href: '/globe-v2', label: 'Globe' },
   { href: '/notebooks', label: 'Notebooks' },
 ];
 
@@ -23,6 +23,10 @@ const links = variant === 'teaching' ? teachingLinks : professionalLinks;
 const brandHref = variant === 'teaching' ? '/teaching' : '/';
 
 function isActive(href: string) {
+  if (href === '/globe-v2') {
+    return pathname === href || pathname === href + '/' || pathname.startsWith('/globe-v') || pathname.startsWith('/globe/');
+  }
+
   return pathname === href || pathname === href + '/' || pathname.startsWith(href + '/');
 }
 ---

@@ -1,0 +1,27 @@
+---
+interface Props {
+  active: 'map' | 'atlas';
+}
+
+const { active } = Astro.props;
+
+const versions = [
+  { id: 'map', href: '/globe-v2', label: '02 Map' },
+  { id: 'atlas', href: '/globe-v3', label: '03 Atlas' },
+];
+---
+
+<nav class="flex flex-wrap gap-2" aria-label="Globe page versions">
+  {versions.map((version) => (
+    <a
+      href={version.href}
+      class={`px-3 py-2 rounded text-xs font-mono border transition-colors ${
+        active === version.id
+          ? 'bg-accent text-white border-accent'
+          : 'bg-dark-card text-slate-400 border-dark-border hover:text-white hover:border-accent/60'
+      }`}
+    >
+      {version.label}
+    </a>
+  ))}
+</nav>

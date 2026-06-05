@@ -1,0 +1,545 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import GlobeVersionNav from '../components/GlobeVersionNav.astro';
+import { taughtCountryDetails } from '../data/taughtCountries.js';
+import { getFlatWorldMap } from '../data/worldMap.js';
+
+const count = taughtCountryDetails.length;
+const map = getFlatWorldMap();
+const labelOffsets = {
+  '840': { dx: 16, dy: 4, anchor: 'start' },
+  '070': { dx: -14, dy: -14, anchor: 'end' },
+  '008': { dx: 14, dy: 18, anchor: 'start' },
+};
+const highlightedCountries = map.countries
+  .filter((country) => country.highlighted)
+  .map((country) => ({
+    ...country,
+    label: labelOffsets[country.id] ?? { dx: 12, dy: -12, anchor: 'start' },
+  }));
+---
+
+<BaseLayout
+  title="Students Around the World - Map Version"
+  description="A lightweight map view of countries Bojan Milinic has taught students from"
+  darkMode={true}
+  navVariant="teaching"
+>
+  <main class="max-w-6xl mx-auto px-6 py-16 overflow-x-hidden">
+    <section class="mb-10">
+      <div class="flex items-start justify-between flex-wrap gap-4 mb-8">
+        <div>
+          <p class="font-mono text-accent-light text-sm mb-3 tracking-wide">// globe version 02</p>
+          <h1 class="font-serif text-4xl md:text-5xl font-bold text-white mb-4 leading-tight">
+            Teaching Map
+          </h1>
+          <p class="text-slate-400 text-lg max-w-2xl leading-relaxed">
+            A real country-outline map rendered at build time, with taught countries highlighted.
+          </p>
+        </div>
+        <span class="font-mono text-sm bg-dark-card border border-dark-border text-accent-light px-4 py-2 rounded self-start mt-1">
+          {count} {count === 1 ? 'country' : 'countries'}
+        </span>
+      </div>
+
+      <GlobeVersionNav active="map" />
+    </section>
+
+    <section class="mb-14">
+      <div class="world-map" aria-label="Flat map with taught countries marked">
+        <svg
+          id="teaching-map"
+          viewBox={`0 0 ${map.width} ${map.height}`}
+          role="img"
+          aria-labelledby="map-title map-desc"
+        >
+          <title id="map-title">World map of taught countries</title>
+          <desc id="map-desc">Countries with taught students are highlighted in blue.</desc>
+          <path class="map-sphere" d={map.sphere}></path>
+          <path class="map-graticule" d={map.graticule}></path>
+          {map.countries.map((country) => (
+            <path
+              class={`country-outline ${country.highlighted ? 'country-highlighted' : ''}`}
+              data-country-id={country.id}
+              data-country-name={country.name}
+              data-label-x={country.centroid[0]}
+              data-label-y={country.centroid[1]}
+              d={country.d}
+            ></path>
+          ))}
+          {highlightedCountries.map((country) => (
+            <g class="selected-callout" data-country-id={country.id}>
+              <text
+                x={country.centroid[0] + country.label.dx}
+                y={country.centroid[1] + country.label.dy}
+                text-anchor={country.label.anchor}
+              >
+                {country.name}
+              </text>
+            </g>
+          ))}
+          <g id="clicked-country-label" class="clicked-country-label" hidden>
+            <text></text>
+          </g>
+        </svg>
+      </div>
+      <div class="map-controls" aria-label="Map view controls">
+        <button type="button" id="zoom-in-map">Zoom in</button>
+        <button type="button" id="zoom-out-map">Zoom out</button>
+        <button type="button" id="reset-map">Reset map</button>
+      </div>
+    </section>
+
+    <section class="grid md:grid-cols-[280px_minmax(0,1fr)] gap-8">
+      <div>
+        <p class="font-mono text-xs uppercase tracking-widest text-slate-500 mb-3">Why this one</p>
+        <p class="text-slate-300 leading-relaxed">
+          It is the easiest to scan and the best fit if you want the countries to be geographically recognizable.
+        </p>
+      </div>
+
+      <div class="grid sm:grid-cols-3 gap-4">
+        {taughtCountryDetails.map((country) => (
+          <article class="border border-dark-border bg-dark-card rounded-lg p-5">
+            <div class="flex items-center justify-between gap-3 mb-5">
+              <span class="font-mono text-accent-light text-xs">{country.iso}</span>
+              <span class="text-xs text-slate-500">{country.region}</span>
+            </div>
+            <h2 class="text-white font-semibold text-lg mb-2">{country.name}</h2>
+            <p class="text-slate-500 text-sm">{country.coordinateLabel}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+  </main>
+</BaseLayout>
+
+<script>
+  const mapSvg = document.getElementById('teaching-map');
+  const zoomInButton = document.getElementById('zoom-in-map');
+  const zoomOutButton = document.getElementById('zoom-out-map');
+  const resetButton = document.getElementById('reset-map');
+  const allCountries = document.querySelectorAll('.country-outline[data-country-id]');
+  const highlightedCountries = document.querySelectorAll('.country-highlighted[data-country-id]');
+  const clickedCountryLabel = document.getElementById('clicked-country-label');
+  const clickedCountryLabelText = clickedCountryLabel?.querySelector('text');
+  let selectedCountryId = null;
+  let activeAnimationFrame = null;
+  let suppressMapCountryClick = false;
+  const callouts = new Map(
+    Array.from(document.querySelectorAll('.selected-callout[data-country-id]')).map((callout) => [
+      callout.dataset.countryId,
+      callout,
+    ])
+  );
+
+  function setCallout(countryId, isActive) {
+    const callout = callouts.get(countryId);
+    if (!callout) return;
+
+    callout.classList.toggle('is-active', isActive);
+  }
+
+  function setClickedCountryLabel(country) {
+    if (!clickedCountryLabel || !clickedCountryLabelText) return;
+
+    const labelX = Number(country.dataset.labelX);
+    const labelY = Number(country.dataset.labelY);
+
+    clickedCountryLabelText.textContent = country.dataset.countryName ?? '';
+    clickedCountryLabelText.setAttribute('x', String(labelX + 12));
+    clickedCountryLabelText.setAttribute('y', String(labelY - 12));
+    clickedCountryLabelText.setAttribute('text-anchor', 'start');
+    clickedCountryLabel.removeAttribute('hidden');
+  }
+
+  function hideClickedCountryLabel() {
+    clickedCountryLabel?.setAttribute('hidden', '');
+  }
+
+  function selectCountry(country) {
+    const countryId = country.dataset.countryId;
+    if (selectedCountryId && selectedCountryId !== countryId) {
+      setCallout(selectedCountryId, false);
+    }
+
+    selectedCountryId = countryId;
+    const hasCallout = callouts.has(countryId);
+    setCallout(countryId, hasCallout);
+
+    if (hasCallout) {
+      hideClickedCountryLabel();
+    } else {
+      setClickedCountryLabel(country);
+    }
+  }
+
+  if (mapSvg) {
+    const defaultViewBox = mapSvg.getAttribute('viewBox').split(/\s+/).map(Number);
+    const [defaultX, defaultY, defaultWidth, defaultHeight] = defaultViewBox;
+    const aspectRatio = defaultWidth / defaultHeight;
+    const minViewBoxWidth = defaultWidth / 20;
+    const baseLabelSize = 13;
+    const baseLabelStroke = 4;
+    let currentViewBox = [...defaultViewBox];
+    let pointerDown = false;
+    let lastPointer = null;
+
+    function clampViewBox([x, y, width, height]) {
+      let nextWidth = Math.max(minViewBoxWidth, Math.min(defaultWidth, width));
+      let nextHeight = nextWidth / aspectRatio;
+
+      if (nextHeight > defaultHeight) {
+        nextHeight = defaultHeight;
+        nextWidth = nextHeight * aspectRatio;
+      }
+
+      const maxX = defaultX + defaultWidth - nextWidth;
+      const maxY = defaultY + defaultHeight - nextHeight;
+      const nextX = Math.max(defaultX, Math.min(maxX, x));
+      const nextY = Math.max(defaultY, Math.min(maxY, y));
+
+      return [nextX, nextY, nextWidth, nextHeight];
+    }
+
+    function setViewBox(viewBox) {
+      currentViewBox = clampViewBox(viewBox);
+      mapSvg.setAttribute('viewBox', currentViewBox.map((value) => value.toFixed(3)).join(' '));
+      updateLabelScale();
+    }
+
+    function updateLabelScale() {
+      const zoomRatio = currentViewBox[2] / defaultWidth;
+      const labelSize = Math.max(3.4, Math.min(baseLabelSize, baseLabelSize * zoomRatio));
+      const labelStroke = Math.max(0.9, Math.min(baseLabelStroke, baseLabelStroke * zoomRatio));
+
+      mapSvg.style.setProperty('--map-label-size', `${labelSize}px`);
+      mapSvg.style.setProperty('--map-label-stroke', `${labelStroke}px`);
+    }
+
+    function animateViewBox(viewBox) {
+      if (activeAnimationFrame !== null) {
+        cancelAnimationFrame(activeAnimationFrame);
+      }
+
+      const startViewBox = [...currentViewBox];
+      const targetViewBox = clampViewBox(viewBox);
+      const duration = 320;
+      const start = performance.now();
+
+      function tick(now) {
+        const t = Math.min(1, (now - start) / duration);
+        const eased = 1 - Math.pow(1 - t, 3);
+        const nextViewBox = startViewBox.map((value, index) => (
+          value + (targetViewBox[index] - value) * eased
+        ));
+
+        setViewBox(nextViewBox);
+
+        if (t < 1) {
+          activeAnimationFrame = requestAnimationFrame(tick);
+        } else {
+          activeAnimationFrame = null;
+        }
+      }
+
+      activeAnimationFrame = requestAnimationFrame(tick);
+    }
+
+    function isZoomed() {
+      return currentViewBox[2] < defaultWidth - 0.5 || currentViewBox[3] < defaultHeight - 0.5;
+    }
+
+    function panBy(deltaX, deltaY) {
+      const [, , width, height] = currentViewBox;
+      const rect = mapSvg.getBoundingClientRect();
+      const mapDeltaX = (deltaX / rect.width) * width;
+      const mapDeltaY = (deltaY / rect.height) * height;
+
+      setViewBox([
+        currentViewBox[0] + mapDeltaX,
+        currentViewBox[1] + mapDeltaY,
+        currentViewBox[2],
+        currentViewBox[3],
+      ]);
+    }
+
+    function zoomAroundCenter(factor) {
+      const [x, y, width, height] = currentViewBox;
+      const centerX = x + width / 2;
+      const centerY = y + height / 2;
+      const nextWidth = width / factor;
+      const nextHeight = nextWidth / aspectRatio;
+
+      animateViewBox([
+        centerX - nextWidth / 2,
+        centerY - nextHeight / 2,
+        nextWidth,
+        nextHeight,
+      ]);
+    }
+
+    function zoomToCountry(country) {
+      const box = country.getBBox();
+      const centerX = box.x + box.width / 2;
+      const centerY = box.y + box.height / 2;
+      const targetWidth = Math.max(box.width * 1.45, defaultWidth * 0.14);
+      const targetHeight = Math.max(box.height * 1.45, defaultHeight * 0.14);
+      let nextWidth = targetWidth;
+      let nextHeight = nextWidth / aspectRatio;
+
+      if (nextHeight < targetHeight) {
+        nextHeight = targetHeight;
+        nextWidth = nextHeight * aspectRatio;
+      }
+
+      animateViewBox([
+        centerX - nextWidth / 2,
+        centerY - nextHeight / 2,
+        nextWidth,
+        nextHeight,
+      ]);
+    }
+
+    zoomInButton?.addEventListener('click', () => zoomAroundCenter(1.75));
+    zoomOutButton?.addEventListener('click', () => zoomAroundCenter(1 / 1.75));
+    resetButton?.addEventListener('click', () => animateViewBox(defaultViewBox));
+
+    mapSvg.addEventListener('pointerdown', (event) => {
+      if (!isZoomed()) return;
+
+      pointerDown = true;
+      suppressMapCountryClick = false;
+      lastPointer = { x: event.clientX, y: event.clientY };
+      mapSvg.setPointerCapture(event.pointerId);
+      mapSvg.classList.add('is-panning');
+    });
+
+    mapSvg.addEventListener('pointermove', (event) => {
+      if (!pointerDown || !lastPointer) return;
+
+      const deltaX = lastPointer.x - event.clientX;
+      const deltaY = lastPointer.y - event.clientY;
+
+      if (Math.abs(deltaX) + Math.abs(deltaY) > 3) {
+        suppressMapCountryClick = true;
+      }
+
+      panBy(deltaX, deltaY);
+      lastPointer = { x: event.clientX, y: event.clientY };
+    });
+
+    function endPan(event) {
+      pointerDown = false;
+      lastPointer = null;
+      mapSvg.classList.remove('is-panning');
+
+      if (event.pointerId !== undefined && mapSvg.hasPointerCapture(event.pointerId)) {
+        mapSvg.releasePointerCapture(event.pointerId);
+      }
+    }
+
+    mapSvg.addEventListener('pointerup', endPan);
+    mapSvg.addEventListener('pointercancel', endPan);
+    mapSvg.addEventListener('lostpointercapture', endPan);
+    mapSvg.addEventListener('wheel', (event) => {
+      if (!isZoomed()) return;
+
+      event.preventDefault();
+      panBy(event.deltaX, event.deltaY);
+    }, { passive: false });
+
+    updateLabelScale();
+
+    allCountries.forEach((country) => {
+      country.addEventListener('click', (event) => {
+        if (suppressMapCountryClick) {
+          suppressMapCountryClick = false;
+          event.stopImmediatePropagation();
+          return;
+        }
+
+        zoomToCountry(country);
+      });
+      country.addEventListener('keydown', (event) => {
+        if (event.key !== 'Enter' && event.key !== ' ') return;
+
+        zoomToCountry(country);
+      });
+    });
+  }
+
+  highlightedCountries.forEach((country) => {
+    const countryId = country.dataset.countryId;
+
+    country.setAttribute('tabindex', '0');
+    country.setAttribute('role', 'button');
+    country.setAttribute('aria-label', `Show ${country.dataset.countryName} label`);
+    country.addEventListener('mouseenter', () => setCallout(countryId, true));
+    country.addEventListener('mouseleave', () => setCallout(countryId, selectedCountryId === countryId));
+    country.addEventListener('focus', () => setCallout(countryId, true));
+    country.addEventListener('blur', () => setCallout(countryId, selectedCountryId === countryId));
+    country.addEventListener('click', () => selectCountry(country));
+    country.addEventListener('keydown', (event) => {
+      if (event.key !== 'Enter' && event.key !== ' ') return;
+
+      event.preventDefault();
+      selectCountry(country);
+    });
+  });
+
+  allCountries.forEach((country) => {
+    if (country.classList.contains('country-highlighted')) return;
+
+    country.setAttribute('tabindex', '0');
+    country.setAttribute('role', 'button');
+    country.setAttribute('aria-label', `Show ${country.dataset.countryName} label`);
+    country.addEventListener('click', () => selectCountry(country));
+    country.addEventListener('keydown', (event) => {
+      if (event.key !== 'Enter' && event.key !== ' ') return;
+
+      event.preventDefault();
+      selectCountry(country);
+    });
+  });
+</script>
+
+<style>
+  .world-map {
+    position: relative;
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    aspect-ratio: 960 / 520;
+    overflow: hidden;
+    border-radius: 8px;
+    border: 1px solid rgb(51 65 85);
+    background: linear-gradient(135deg, #09172a 0%, #10223a 52%, #07111f 100%);
+    box-shadow: 0 24px 70px rgba(2, 6, 23, 0.36);
+  }
+
+  .world-map svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    cursor: grab;
+    touch-action: none;
+    user-select: none;
+  }
+
+  .world-map svg.is-panning {
+    cursor: grabbing;
+  }
+
+  .map-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 14px;
+  }
+
+  .map-controls button {
+    min-width: 38px;
+    min-height: 38px;
+    border: 1px solid rgb(51 65 85);
+    border-radius: 6px;
+    background: rgba(15, 23, 42, 0.5);
+    padding: 8px 12px;
+    color: rgb(203 213 225);
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.78rem;
+    line-height: 1;
+    transition:
+      border-color 150ms ease,
+      color 150ms ease,
+      background-color 150ms ease;
+  }
+
+  .map-controls button:hover,
+  .map-controls button:focus-visible {
+    border-color: rgba(96, 165, 250, 0.7);
+    background: rgba(30, 41, 59, 0.9);
+    color: white;
+    outline: none;
+  }
+
+  .map-sphere {
+    fill: rgba(15, 23, 42, 0.42);
+    stroke: rgba(96, 165, 250, 0.28);
+    stroke-width: 1.2;
+  }
+
+  .map-graticule {
+    fill: none;
+    stroke: rgba(148, 163, 184, 0.12);
+    stroke-width: 0.7;
+  }
+
+  .country-outline {
+    fill: rgba(30, 58, 95, 0.74);
+    stroke: rgba(148, 163, 184, 0.42);
+    stroke-width: 0.55;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .country-highlighted {
+    fill: #60a5fa;
+    stroke: #eff6ff;
+    stroke-width: 0.85;
+    cursor: pointer;
+  }
+
+  .country-outline:hover {
+    fill: #93c5fd;
+  }
+
+  .country-outline:focus {
+    outline: none;
+  }
+
+  .country-highlighted:hover,
+  .country-highlighted:focus {
+    fill: #60a5fa;
+    stroke: #eff6ff;
+    stroke-width: 1.05;
+  }
+
+  .selected-callout {
+    pointer-events: none;
+  }
+
+  .selected-callout text,
+  .clicked-country-label text {
+    opacity: 0;
+    transform: translateY(4px);
+    transition:
+      opacity 140ms ease,
+      transform 140ms ease;
+    pointer-events: none;
+    fill: #eff6ff;
+    paint-order: stroke;
+    stroke: rgba(15, 23, 42, 0.92);
+    stroke-width: var(--map-label-stroke, 4px);
+    stroke-linejoin: round;
+    font-family: "JetBrains Mono", monospace;
+    font-size: var(--map-label-size, 13px);
+    font-weight: 700;
+  }
+
+  .selected-callout.is-active text {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .clicked-country-label text {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: none;
+  }
+
+  @media (max-width: 640px) {
+    .selected-callout text {
+      display: none;
+    }
+  }
+</style>

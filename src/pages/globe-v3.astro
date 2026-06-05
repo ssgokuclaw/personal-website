@@ -1,0 +1,647 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import GlobeVersionNav from '../components/GlobeVersionNav.astro';
+import { taughtCountryDetails } from '../data/taughtCountries.js';
+import { getTeachingGlobe } from '../data/worldMap.js';
+
+const count = taughtCountryDetails.length;
+const globe = getTeachingGlobe();
+const highlightedIds = taughtCountryDetails.map((country) => country.numericId);
+const taughtCountryNames = Object.fromEntries(
+  taughtCountryDetails.map((country) => [country.numericId, country.name])
+);
+const labelOffsets = {
+  '840': { dx: 14, dy: -16, anchor: 'start' },
+  '070': { dx: 14, dy: -12, anchor: 'start' },
+  '008': { dx: 14, dy: 18, anchor: 'start' },
+};
+const highlightedCountries = globe.countries
+  .filter((country) => country.highlighted)
+  .map((country) => ({
+    ...country,
+    label: labelOffsets[country.id] ?? { dx: 12, dy: -12, anchor: 'start' },
+  }));
+---
+
+<BaseLayout
+  title="Students Around the World - Atlas Version"
+  description="A lightweight atlas view of countries Bojan Milinic has taught students from"
+  darkMode={true}
+  navVariant="teaching"
+>
+  <main class="max-w-6xl mx-auto px-6 py-16 overflow-x-hidden">
+    <section class="mb-10">
+      <div class="flex items-start justify-between flex-wrap gap-4 mb-8">
+        <div>
+          <p class="font-mono text-accent-light text-sm mb-3 tracking-wide">// globe version 03</p>
+          <h1 class="font-serif text-4xl md:text-5xl font-bold text-white mb-4 leading-tight">
+            Teaching Atlas
+          </h1>
+          <p class="text-slate-400 text-lg max-w-2xl leading-relaxed">
+            A real globe projection with country outlines and highlighted taught countries.
+          </p>
+        </div>
+        <span class="font-mono text-sm bg-dark-card border border-dark-border text-accent-light px-4 py-2 rounded self-start mt-1">
+          {count} {count === 1 ? 'country' : 'countries'}
+        </span>
+      </div>
+
+      <GlobeVersionNav active="atlas" />
+    </section>
+
+    <section class="grid lg:grid-cols-[460px_minmax(0,1fr)] gap-10 items-start">
+      <div class="atlas-summary">
+        <div class="real-globe">
+          <svg
+            id="teaching-globe"
+            viewBox={`0 0 ${globe.width} ${globe.height}`}
+            role="img"
+            aria-labelledby="globe-title globe-desc"
+          >
+            <title id="globe-title">Globe of taught countries</title>
+            <desc id="globe-desc">A globe projection with taught countries highlighted in blue.</desc>
+            <path class="globe-sphere" d={globe.sphere}></path>
+            <path class="globe-graticule" d={globe.graticule}></path>
+            {globe.countries.map((country) => (
+              <path
+                class={`country-outline ${country.highlighted ? 'country-highlighted' : ''}`}
+                d={country.d}
+              ></path>
+            ))}
+            {highlightedCountries.map((country) => (
+              <g class="selected-callout" data-country-id={country.id}>
+                <text
+                  x={country.centroid[0] + country.label.dx}
+                  y={country.centroid[1] + country.label.dy}
+                  text-anchor={country.label.anchor}
+                >
+                  {country.name}
+                </text>
+              </g>
+            ))}
+          </svg>
+        </div>
+        <p class="font-mono text-xs uppercase tracking-widest text-slate-500 mb-3">Why this one</p>
+        <p class="text-slate-300 leading-relaxed">
+          This keeps the globe metaphor while using actual country outlines instead of decorative markers.
+        </p>
+        <div class="globe-controls" aria-label="Globe view controls">
+          <button type="button" id="zoom-in-globe">
+            Zoom in
+          </button>
+          <button type="button" id="zoom-out-globe">
+            Zoom out
+          </button>
+          <button type="button" id="reset-globe">
+            Reset view
+          </button>
+        </div>
+      </div>
+
+      <div class="space-y-4">
+        {taughtCountryDetails.map((country, index) => (
+          <article class="atlas-row" data-country-id={country.numericId}>
+            <span class="atlas-number">{String(index + 1).padStart(2, '0')}</span>
+            <div class="atlas-orb" aria-hidden="true"></div>
+            <div class="min-w-0">
+              <div class="flex flex-wrap items-baseline gap-x-3 gap-y-1 mb-1">
+                <h2 class="text-white font-semibold text-xl break-words">{country.name}</h2>
+                <span class="font-mono text-xs text-accent-light">{country.iso}</span>
+              </div>
+              <p class="text-slate-500 text-sm">
+                {country.region} - {country.timezone} - {country.coordinateLabel}
+              </p>
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
+  </main>
+</BaseLayout>
+
+<script
+  id="globe-config"
+  type="application/json"
+  set:html={JSON.stringify({ highlightedIds, taughtCountryNames })}
+></script>
+
+<script>
+  import { geoCentroid, geoGraticule10, geoInterpolate, geoOrthographic, geoPath } from 'd3-geo';
+  import { feature } from 'topojson-client';
+  import world from 'world-atlas/countries-110m.json';
+
+  const svg = document.getElementById('teaching-globe');
+  const resetButton = document.getElementById('reset-globe');
+  const zoomInButton = document.getElementById('zoom-in-globe');
+  const zoomOutButton = document.getElementById('zoom-out-globe');
+  const config = JSON.parse(document.getElementById('globe-config')?.textContent ?? '{}');
+  const highlightedIds = config.highlightedIds ?? [];
+  const taughtCountryNames = config.taughtCountryNames ?? {};
+
+  if (svg) {
+    const width = 640;
+    const height = 640;
+    const selectedIds = new Set(highlightedIds);
+    const selectedLabelOffsets = {
+      '840': { dx: 14, dy: -16, anchor: 'start' },
+      '070': { dx: 14, dy: -12, anchor: 'start' },
+      '008': { dx: 14, dy: 18, anchor: 'start' },
+    };
+    const defaultRotation = [35, -24, 0];
+    const defaultScale = 302;
+    const minScale = 250;
+    const maxScale = 60000;
+    const countryZoomPadding = 0.82;
+    const trackpadZoomSpeed = 0.0022;
+    const features = feature(world, world.objects.countries).features;
+    const selectedFeatures = features.filter((country) => selectedIds.has(country.id));
+
+    const projection = geoOrthographic()
+      .translate([width / 2, height / 2])
+      .scale(defaultScale)
+      .rotate(defaultRotation)
+      .clipAngle(90);
+
+    const path = geoPath(projection);
+    const graticule = geoGraticule10();
+    let activeAnimationFrame = null;
+    let wheelAnimationFrame = null;
+    let wheelTargetScale = defaultScale;
+    let animationVersion = 0;
+    let selectedCountryId = null;
+
+    const sphere = svg.querySelector('.globe-sphere');
+    const graticulePath = svg.querySelector('.globe-graticule');
+    const countryPaths = Array.from(svg.querySelectorAll('.country-outline'));
+    const callouts = Array.from(svg.querySelectorAll('.selected-callout'));
+
+    features.forEach((country, index) => {
+      const countryPath = countryPaths[index];
+      if (!countryPath) return;
+
+      countryPath.dataset.countryId = country.id;
+      addCountryZoomTarget(countryPath, country);
+    });
+
+    function addCountryZoomTarget(target, country) {
+      target.setAttribute('tabindex', '0');
+      target.setAttribute('role', 'button');
+      target.setAttribute('aria-label', `Zoom to ${taughtCountryNames[country.id] ?? country.properties.name}`);
+      target.addEventListener('mouseenter', () => setCallout(country.id, true));
+      target.addEventListener('mouseleave', () => setCallout(country.id, selectedCountryId === country.id));
+      target.addEventListener('focus', () => setCallout(country.id, true));
+      target.addEventListener('blur', () => setCallout(country.id, selectedCountryId === country.id));
+      target.addEventListener('click', () => {
+        if (suppressCountryClick) {
+          suppressCountryClick = false;
+          return;
+        }
+
+        persistCallout(country.id);
+        zoomToCountry(country);
+      });
+      target.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          persistCallout(country.id);
+          zoomToCountry(country);
+        }
+      });
+    }
+
+    function setCallout(countryId, isActive) {
+      const callout = callouts.find((candidate) => candidate.dataset.countryId === countryId);
+      if (!callout) return;
+
+      callout.classList.toggle('is-active', isActive);
+    }
+
+    function persistCallout(countryId) {
+      if (selectedCountryId && selectedCountryId !== countryId) {
+        setCallout(selectedCountryId, false);
+      }
+
+      selectedCountryId = countryId;
+      setCallout(countryId, true);
+    }
+
+    function isVisible(country) {
+      const [lon, lat] = geoCentroid(country);
+      const [rotateLon, rotateLat] = projection.rotate();
+      const distance = geoDistanceDegrees(lon, lat, -rotateLon, -rotateLat);
+      return distance < 89;
+    }
+
+    function geoDistanceDegrees(lonA, latA, lonB, latB) {
+      const toRad = Math.PI / 180;
+      const aLat = latA * toRad;
+      const bLat = latB * toRad;
+      const deltaLon = (lonB - lonA) * toRad;
+      const cosDistance = Math.sin(aLat) * Math.sin(bLat)
+        + Math.cos(aLat) * Math.cos(bLat) * Math.cos(deltaLon);
+      return Math.acos(Math.max(-1, Math.min(1, cosDistance))) / toRad;
+    }
+
+    function render() {
+      if (sphere) sphere.setAttribute('d', path({ type: 'Sphere' }));
+      if (graticulePath) graticulePath.setAttribute('d', path(graticule));
+
+      features.forEach((country, index) => {
+        const countryPath = countryPaths[index];
+        if (!countryPath) return;
+
+        const d = path(country);
+        if (d) {
+          countryPath.setAttribute('d', d);
+          countryPath.removeAttribute('hidden');
+        } else {
+          countryPath.setAttribute('hidden', '');
+        }
+      });
+
+      selectedFeatures.forEach((country, index) => {
+        const callout = callouts[index];
+        if (!callout) return;
+
+        const d = path(country);
+        if (!d || !isVisible(country)) {
+          callout.setAttribute('hidden', '');
+          return;
+        }
+
+        const [x, y] = path.centroid(country);
+        const offset = selectedLabelOffsets[country.id] ?? { dx: 12, dy: -12, anchor: 'start' };
+        const text = callout.querySelector('text');
+
+        if (text) {
+          text.setAttribute('x', x + offset.dx);
+          text.setAttribute('y', y + offset.dy);
+          text.setAttribute('text-anchor', offset.anchor);
+        }
+
+        callout.removeAttribute('hidden');
+      });
+    }
+
+    function boundedScale(scale) {
+      return Math.max(minScale, Math.min(maxScale, scale));
+    }
+
+    function stopAnimation() {
+      animationVersion += 1;
+
+      if (activeAnimationFrame !== null) {
+        cancelAnimationFrame(activeAnimationFrame);
+        activeAnimationFrame = null;
+      }
+
+      if (wheelAnimationFrame !== null) {
+        cancelAnimationFrame(wheelAnimationFrame);
+        wheelAnimationFrame = null;
+      }
+    }
+
+    function setScale(scale) {
+      projection.scale(boundedScale(scale));
+      wheelTargetScale = projection.scale();
+    }
+
+    function animateTo(rotation, scale) {
+      stopAnimation();
+      const animationId = animationVersion;
+      const startRotation = projection.rotate();
+      const startScale = projection.scale();
+      const targetScale = boundedScale(scale);
+      const interpolateRotation = geoInterpolate(
+        [-startRotation[0], -startRotation[1]],
+        [-rotation[0], -rotation[1]]
+      );
+      const duration = 620;
+      const start = performance.now();
+
+      function tick(now) {
+        if (animationId !== animationVersion) return;
+
+        const t = Math.min(1, (now - start) / duration);
+        const eased = 1 - Math.pow(1 - t, 3);
+        const [lon, lat] = interpolateRotation(eased);
+
+        projection
+          .rotate([-lon, -lat, 0])
+          .scale(startScale + (targetScale - startScale) * eased);
+        wheelTargetScale = projection.scale();
+        render();
+
+        if (t < 1) {
+          activeAnimationFrame = requestAnimationFrame(tick);
+        } else {
+          activeAnimationFrame = null;
+        }
+      }
+
+      activeAnimationFrame = requestAnimationFrame(tick);
+    }
+
+    function animateScaleTo(scale) {
+      stopAnimation();
+      const animationId = animationVersion;
+      const startScale = projection.scale();
+      const targetScale = boundedScale(scale);
+      const duration = 220;
+      const start = performance.now();
+
+      function tick(now) {
+        if (animationId !== animationVersion) return;
+
+        const t = Math.min(1, (now - start) / duration);
+        const eased = 1 - Math.pow(1 - t, 3);
+
+        setScale(startScale + (targetScale - startScale) * eased);
+        render();
+
+        if (t < 1) {
+          activeAnimationFrame = requestAnimationFrame(tick);
+        } else {
+          activeAnimationFrame = null;
+        }
+      }
+
+      activeAnimationFrame = requestAnimationFrame(tick);
+    }
+
+    function zoomBy(factor) {
+      animateScaleTo(projection.scale() * factor);
+    }
+
+    function scaleForCountry(country, rotation) {
+      const previousRotation = projection.rotate();
+      const previousScale = projection.scale();
+
+      projection.rotate(rotation).scale(defaultScale);
+      const [[minX, minY], [maxX, maxY]] = path.bounds(country);
+      projection.rotate(previousRotation).scale(previousScale);
+
+      const countryWidth = Math.max(1, maxX - minX);
+      const countryHeight = Math.max(1, maxY - minY);
+      const fitScale = defaultScale * Math.min(
+        (width * countryZoomPadding) / countryWidth,
+        (height * countryZoomPadding) / countryHeight
+      );
+
+      return boundedScale(fitScale);
+    }
+
+    function zoomToCountry(country) {
+      const [lon, lat] = geoCentroid(country);
+      const rotation = [-lon, -lat, 0];
+      animateTo(rotation, scaleForCountry(country, rotation));
+    }
+
+    function resetGlobe() {
+      animateTo(defaultRotation, defaultScale);
+    }
+
+    function applyWheelZoom() {
+      setScale(wheelTargetScale);
+      render();
+      wheelAnimationFrame = null;
+    }
+
+    let pointerDown = false;
+    let lastPointer = null;
+    let suppressCountryClick = false;
+
+    svg.addEventListener('pointerdown', (event) => {
+      pointerDown = true;
+      lastPointer = { x: event.clientX, y: event.clientY };
+      svg.setPointerCapture(event.pointerId);
+      svg.classList.add('is-dragging');
+    });
+
+    svg.addEventListener('pointermove', (event) => {
+      if (!pointerDown || !lastPointer) return;
+
+      const dx = event.clientX - lastPointer.x;
+      const dy = event.clientY - lastPointer.y;
+      const [lon, lat, roll] = projection.rotate();
+
+      if (Math.abs(dx) + Math.abs(dy) > 3) {
+        suppressCountryClick = true;
+      }
+
+      projection
+        .rotate([lon + dx * 0.42, Math.max(-75, Math.min(75, lat - dy * 0.42)), roll]);
+      lastPointer = { x: event.clientX, y: event.clientY };
+      render();
+    });
+
+    function endDrag(event) {
+      pointerDown = false;
+      lastPointer = null;
+      svg.classList.remove('is-dragging');
+      if (event.pointerId !== undefined && svg.hasPointerCapture(event.pointerId)) {
+        svg.releasePointerCapture(event.pointerId);
+      }
+    }
+
+    svg.addEventListener('pointerup', endDrag);
+    svg.addEventListener('pointercancel', endDrag);
+    svg.addEventListener('lostpointercapture', endDrag);
+    svg.addEventListener('wheel', (event) => {
+      event.preventDefault();
+      if (activeAnimationFrame !== null) {
+        animationVersion += 1;
+        cancelAnimationFrame(activeAnimationFrame);
+        activeAnimationFrame = null;
+      }
+
+      const boundedDelta = Math.max(-120, Math.min(120, event.deltaY));
+      wheelTargetScale = boundedScale(wheelTargetScale * Math.exp(-boundedDelta * trackpadZoomSpeed));
+
+      if (wheelAnimationFrame === null) {
+        wheelAnimationFrame = requestAnimationFrame(applyWheelZoom);
+      }
+    }, { passive: false });
+    zoomInButton?.addEventListener('click', () => zoomBy(1.75));
+    zoomOutButton?.addEventListener('click', () => animateScaleTo(defaultScale));
+    resetButton?.addEventListener('click', resetGlobe);
+
+    render();
+  }
+</script>
+
+<style>
+  .atlas-summary {
+    min-width: 0;
+    border: 1px solid rgb(51 65 85);
+    background: rgb(30 41 59);
+    border-radius: 8px;
+    padding: 24px;
+  }
+
+  .real-globe {
+    width: 100%;
+    max-width: 390px;
+    margin: 0 auto 28px;
+  }
+
+  .real-globe svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    overflow: visible;
+    cursor: grab;
+    touch-action: none;
+    user-select: none;
+  }
+
+  .real-globe svg.is-dragging {
+    cursor: grabbing;
+  }
+
+  .globe-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 20px;
+  }
+
+  .globe-controls button {
+    min-width: 38px;
+    min-height: 38px;
+    border: 1px solid rgb(51 65 85);
+    border-radius: 6px;
+    background: rgba(15, 23, 42, 0.5);
+    padding: 8px 12px;
+    color: rgb(203 213 225);
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.78rem;
+    line-height: 1;
+    transition:
+      border-color 150ms ease,
+      color 150ms ease,
+      background-color 150ms ease;
+  }
+
+  .globe-controls button:hover,
+  .globe-controls button:focus-visible {
+    border-color: rgba(96, 165, 250, 0.7);
+    background: rgba(30, 41, 59, 0.9);
+    color: white;
+    outline: none;
+  }
+
+  .globe-sphere {
+    fill: #0b1930;
+    stroke: rgba(96, 165, 250, 0.34);
+    stroke-width: 1.2;
+    filter: drop-shadow(0 22px 42px rgba(2, 6, 23, 0.42));
+  }
+
+  .globe-graticule {
+    fill: none;
+    stroke: rgba(148, 163, 184, 0.16);
+    stroke-width: 0.7;
+  }
+
+  .country-outline {
+    fill: rgba(30, 58, 95, 0.78);
+    stroke: rgba(148, 163, 184, 0.4);
+    stroke-width: 0.55;
+    vector-effect: non-scaling-stroke;
+    cursor: pointer;
+  }
+
+  .country-highlighted {
+    fill: #60a5fa;
+    stroke: #eff6ff;
+    stroke-width: 1.25;
+    filter: drop-shadow(0 0 6px rgba(96, 165, 250, 0.72));
+  }
+
+  .country-outline:hover {
+    fill: #93c5fd;
+  }
+
+  .country-outline:focus {
+    outline: none;
+    fill: #93c5fd;
+  }
+
+  .selected-callout {
+    pointer-events: none;
+  }
+
+  .selected-callout text {
+    opacity: 0;
+    transform: translateY(4px);
+    transition:
+      opacity 140ms ease,
+      transform 140ms ease;
+    fill: #eff6ff;
+    paint-order: stroke;
+    stroke: rgba(15, 23, 42, 0.94);
+    stroke-width: 4px;
+    stroke-linejoin: round;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 15px;
+    font-weight: 700;
+  }
+
+  .selected-callout.is-active text {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  @media (max-width: 640px) {
+    .selected-callout text {
+      display: none;
+    }
+  }
+
+  .atlas-row {
+    display: grid;
+    grid-template-columns: auto auto minmax(0, 1fr);
+    gap: 16px;
+    align-items: center;
+    border: 1px solid rgb(51 65 85);
+    background: rgba(30, 41, 59, 0.86);
+    border-radius: 8px;
+    padding: 18px;
+    cursor: pointer;
+  }
+
+  .atlas-row:focus {
+    outline: 2px solid rgba(96, 165, 250, 0.72);
+    outline-offset: 3px;
+  }
+
+  .atlas-number {
+    font-family: "JetBrains Mono", monospace;
+    color: rgba(96, 165, 250, 0.44);
+    font-size: 1.35rem;
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  .atlas-orb {
+    width: 42px;
+    height: 42px;
+    border-radius: 999px;
+    border: 1px solid rgba(96, 165, 250, 0.38);
+    background:
+      radial-gradient(circle at 32% 28%, rgba(255, 255, 255, 0.22), transparent 26%),
+      linear-gradient(135deg, #0b1930, #1e3a5f);
+    box-shadow: inset -10px -8px 18px rgba(2, 6, 23, 0.55);
+  }
+
+  @media (max-width: 640px) {
+    .atlas-row {
+      grid-template-columns: auto minmax(0, 1fr);
+    }
+
+    .atlas-orb {
+      display: none;
+    }
+  }
+</style>
