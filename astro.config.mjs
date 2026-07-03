@@ -7,8 +7,12 @@ export default defineConfig({
   integrations: [
     tailwind(),
     sitemap({
-      // /sitemap is an internal dev page, /booking-confirmed is only reachable after form submit
-      filter: (page) => !page.includes('/sitemap/') && !page.includes('/booking-confirmed/'),
+      // /sitemap is an internal dev page, /booking-confirmed is only reachable
+      // after form submit, /globe is a redirect stub to /globe-v2
+      filter: (page) =>
+        !page.includes('/sitemap/') &&
+        !page.includes('/booking-confirmed/') &&
+        !page.endsWith('/globe/'),
     }),
   ],
   output: 'static',
